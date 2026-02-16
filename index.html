@@ -497,7 +497,7 @@
         setStreak(newStreak);
         setLastPoints(points);
         setScore(function(s) { return s + points; });
-        setRecentMatchups(function(prev) { return prev.concat([currentMatchup.key]).slice(-5); });
+        setRecentMatchups(function(prev) { return prev.concat([currentMatchup.key]).slice(-15); });
         setTimeout(function() { setShowLightning(false); setGameState("result"); }, 500);
       }
 
