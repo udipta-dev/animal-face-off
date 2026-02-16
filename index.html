@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -85,72 +86,116 @@
 <body>
   <div id="root"></div>
   <script>
-    const e = React.createElement;
-    const { useState, useEffect, useCallback, useRef, memo } = React;
+    var e = React.createElement;
+    var useState = React.useState, useEffect = React.useEffect, useCallback = React.useCallback, useRef = React.useRef;
+
+    // ==================== CONFIG ====================
+    var TOURNAMENT_ROUNDS = 20;
+
+    // ==================== SUPABASE ====================
+    var SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    var SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    var sb = null;
+    try {
+      if (window.supabase && window.supabase.createClient && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(ex) { console.warn('Supabase init failed:', ex); }
+
+    function submitScoreToSupabase(entry) {
+      if (!sb) return Promise.resolve(null);
+      return sb.from('leaderboard').insert([entry])
+        .then(function(r) { if (r.error) console.warn('Supabase insert error:', r.error.message); return r; })
+        .catch(function(err) { console.warn('Supabase submit failed:', err); return null; });
+    }
+
+    function fetchGlobalLeaderboard() {
+      if (!sb) return Promise.resolve(null);
+      return sb.from('leaderboard').select('player_name, score, streak, rounds_correct, created_at')
+        .order('score', { ascending: false }).order('created_at', { ascending: true }).limit(20)
+        .then(function(r) {
+          if (r.error) { console.warn('Supabase fetch error:', r.error.message); return null; }
+          return r.data;
+        })
+        .catch(function(err) { console.warn('Supabase fetch failed:', err); return null; });
+    }
 
     // ==================== ANIMAL DATABASE ====================
-    const animals = [
-      { id: "lion_001", name: "Lion", emoji: "\u{1F981}", imageBase: "lion", weightClass: "heavyweight",
+    var animals = [
+      { id: "lion_001", name: "Lion", emoji: "\uD83E\uDD81", imageBase: "lion", weightClass: "heavyweight",
         stats: { strength: 85, speed: 75, defense: 70, aggression: 90 } },
-      { id: "tiger_001", name: "Tiger", emoji: "\u{1F42F}", imageBase: "tiger", weightClass: "heavyweight",
+      { id: "tiger_001", name: "Tiger", emoji: "\uD83D\uDC2F", imageBase: "tiger", weightClass: "heavyweight",
         stats: { strength: 90, speed: 80, defense: 65, aggression: 85 } },
-      { id: "grizzly_001", name: "Grizzly Bear", emoji: "\u{1F43B}", imageBase: "grizzly-bear", weightClass: "heavyweight",
+      { id: "grizzly_001", name: "Grizzly Bear", emoji: "\uD83D\uDC3B", imageBase: "grizzly-bear", weightClass: "heavyweight",
         stats: { strength: 95, speed: 60, defense: 85, aggression: 80 } },
       { id: "polar_001", name: "Polar Bear", emoji: "\u2744\uFE0F", imageBase: "polar-bear", weightClass: "heavyweight",
         stats: { strength: 95, speed: 58, defense: 90, aggression: 82 } },
-      { id: "gorilla_001", name: "Gorilla", emoji: "\u{1F98D}", imageBase: "gorilla", weightClass: "heavyweight",
+      { id: "gorilla_001", name: "Gorilla", emoji: "\uD83E\uDD8D", imageBase: "gorilla", weightClass: "heavyweight",
         stats: { strength: 100, speed: 55, defense: 75, aggression: 70 } },
-      { id: "croc_001", name: "Crocodile", emoji: "\u{1F40A}", imageBase: "crocodile", weightClass: "heavyweight",
+      { id: "croc_001", name: "Crocodile", emoji: "\uD83D\uDC0A", imageBase: "crocodile", weightClass: "heavyweight",
         stats: { strength: 88, speed: 45, defense: 92, aggression: 85 } },
-      { id: "moose_001", name: "Moose", emoji: "\u{1F98C}", imageBase: "moose", weightClass: "heavyweight",
+      { id: "moose_001", name: "Moose", emoji: "\uD83E\uDD8C", imageBase: "moose", weightClass: "heavyweight",
         stats: { strength: 82, speed: 65, defense: 68, aggression: 72 } },
-      { id: "anaconda_001", name: "Anaconda", emoji: "\u{1F40D}", imageBase: "anaconda", weightClass: "heavyweight",
+      { id: "anaconda_001", name: "Anaconda", emoji: "\uD83D\uDC0D", imageBase: "anaconda", weightClass: "heavyweight",
         stats: { strength: 78, speed: 40, defense: 70, aggression: 80 } },
-      { id: "black_bear_001", name: "Black Bear", emoji: "\u{1F43B}", imageBase: "black-bear", weightClass: "heavyweight",
+      { id: "black_bear_001", name: "Black Bear", emoji: "\uD83D\uDC3B", imageBase: "black-bear", weightClass: "heavyweight",
         stats: { strength: 78, speed: 65, defense: 72, aggression: 68 } },
-      { id: "gaur_001", name: "Gaur", emoji: "\u{1F402}", imageBase: "gaur", weightClass: "heavyweight",
+      { id: "gaur_001", name: "Gaur", emoji: "\uD83D\uDC02", imageBase: "gaur", weightClass: "heavyweight",
         stats: { strength: 92, speed: 58, defense: 70, aggression: 88 } },
-      { id: "bison_001", name: "American Bison", emoji: "\u{1F9AC}", imageBase: "american-bison", weightClass: "heavyweight",
+      { id: "bison_001", name: "American Bison", emoji: "\uD83E\uDDAC", imageBase: "american-bison", weightClass: "heavyweight",
         stats: { strength: 90, speed: 58, defense: 80, aggression: 78 } },
-      { id: "jaguar_001", name: "Jaguar", emoji: "\u{1F406}", imageBase: "jaguar", weightClass: "heavyweight",
+      { id: "jaguar_001", name: "Jaguar", emoji: "\uD83D\uDC06", imageBase: "jaguar", weightClass: "heavyweight",
         stats: { strength: 82, speed: 82, defense: 60, aggression: 88 } },
-      { id: "cape_buffalo_001", name: "Cape Buffalo", emoji: "\u{1F403}", imageBase: "cape-buffalo", weightClass: "heavyweight",
+      { id: "cape_buffalo_001", name: "Cape Buffalo", emoji: "\uD83D\uDC03", imageBase: "cape-buffalo", weightClass: "heavyweight",
         stats: { strength: 90, speed: 55, defense: 82, aggression: 92 } },
-      { id: "komodo_001", name: "Komodo Dragon", emoji: "\u{1F98E}", imageBase: "komodo-dragon", weightClass: "heavyweight",
+      { id: "komodo_001", name: "Komodo Dragon", emoji: "\uD83E\uDD8E", imageBase: "komodo-dragon", weightClass: "heavyweight",
         stats: { strength: 72, speed: 55, defense: 82, aggression: 90 } },
-      { id: "cassowary_001", name: "Cassowary", emoji: "\u{1F426}", imageBase: "cassowary", weightClass: "heavyweight",
+      { id: "cassowary_001", name: "Cassowary", emoji: "\uD83D\uDC26", imageBase: "cassowary", weightClass: "heavyweight",
         stats: { strength: 62, speed: 75, defense: 52, aggression: 91 } },
-      { id: "wildebeest_001", name: "Wildebeest", emoji: "\u{1F403}", imageBase: "wildebeest", weightClass: "heavyweight",
+      { id: "wildebeest_001", name: "Wildebeest", emoji: "\uD83D\uDC03", imageBase: "wildebeest", weightClass: "heavyweight",
         stats: { strength: 75, speed: 72, defense: 60, aggression: 70 } },
-      { id: "kangaroo_001", name: "Kangaroo", emoji: "\u{1F998}", imageBase: "kangaroo", weightClass: "heavyweight",
+      { id: "kangaroo_001", name: "Kangaroo", emoji: "\uD83E\uDD98", imageBase: "kangaroo", weightClass: "heavyweight",
         stats: { strength: 70, speed: 75, defense: 58, aggression: 82 } },
-      { id: "leopard_seal_001", name: "Leopard Seal", emoji: "\u{1F9AD}", imageBase: "leopard-seal", weightClass: "heavyweight",
+      { id: "leopard_seal_001", name: "Leopard Seal", emoji: "\uD83E\uDDAD", imageBase: "leopard-seal", weightClass: "heavyweight",
         stats: { strength: 76, speed: 70, defense: 68, aggression: 86 } },
-      { id: "walrus_001", name: "Walrus", emoji: "\u{1F9AD}", imageBase: "walrus", weightClass: "heavyweight",
+      { id: "walrus_001", name: "Walrus", emoji: "\uD83E\uDDAD", imageBase: "walrus", weightClass: "heavyweight",
         stats: { strength: 85, speed: 35, defense: 90, aggression: 65 } },
-      { id: "ostrich_001", name: "Ostrich", emoji: "\u{1F426}", imageBase: "ostrich", weightClass: "heavyweight",
+      { id: "ostrich_001", name: "Ostrich", emoji: "\uD83D\uDC26", imageBase: "ostrich", weightClass: "heavyweight",
         stats: { strength: 60, speed: 90, defense: 50, aggression: 68 } },
     ];
     animals.forEach(function(a) {
       a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
     });
 
-    // ==================== FIGHT LOGIC ====================
-    function generateMatchup(recentMatchups) {
-      var attempts = 0;
-      while (attempts < 50) {
-        var i = Math.floor(Math.random() * animals.length);
-        var j = Math.floor(Math.random() * animals.length);
-        while (j === i) j = Math.floor(Math.random() * animals.length);
-        var a1 = animals[i], a2 = animals[j];
-        var key = [a1.id, a2.id].sort().join("_vs_");
-        if (!recentMatchups.includes(key)) return { left: a1, right: a2, key: key };
-        attempts++;
+    // ==================== TOURNAMENT LOGIC ====================
+    function shuffleArray(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
       }
-      var i2 = Math.floor(Math.random() * animals.length);
-      var j2 = Math.floor(Math.random() * animals.length);
-      while (j2 === i2) j2 = Math.floor(Math.random() * animals.length);
-      return { left: animals[i2], right: animals[j2], key: [animals[i2].id, animals[j2].id].sort().join("_vs_") };
+      return a;
+    }
+
+    function generateTournamentMatchups() {
+      var pairings = [];
+      for (var i = 0; i < animals.length; i++) {
+        for (var j = i + 1; j < animals.length; j++) {
+          pairings.push({ left: animals[i], right: animals[j] });
+        }
+      }
+      var shuffled = shuffleArray(pairings);
+      return shuffled.slice(0, TOURNAMENT_ROUNDS).map(function(pair) {
+        if (Math.random() < 0.5) return { left: pair.right, right: pair.left };
+        return pair;
+      });
+    }
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
     }
 
     function determineWinner(a1, a2) {
@@ -172,21 +217,20 @@
     function saveSession(session) {
       try { localStorage.setItem("af_session", JSON.stringify(session)); } catch(ex) {}
     }
-    function updateLeaderboard(name, score) {
+    function updateLocalLeaderboard(name, score) {
       var entries = loadLeaderboard();
       var existing = entries.find(function(x) { return x.name === name; });
       if (existing) {
-        if (score > existing.score) { existing.score = score; existing.timestamp = Date.now(); existing.gamesPlayed = (existing.gamesPlayed || 0) + 1; }
+        if (score > existing.score) { existing.score = score; existing.timestamp = Date.now(); }
       } else {
-        entries.push({ name: name, score: score, timestamp: Date.now(), gamesPlayed: 1 });
+        entries.push({ name: name, score: score, timestamp: Date.now() });
       }
       entries.sort(function(a, b) { return b.score - a.score || a.timestamp - b.timestamp; });
-      saveLeaderboard(entries.slice(0, 10));
+      saveLeaderboard(entries.slice(0, 20));
     }
 
     // ==================== COMPONENTS ====================
 
-    // Animal Avatar - tries jpg/jpeg/png/webp then emoji
     function AnimalAvatar(props) {
       var animal = props.animal, size = props.size || "normal";
       var extensions = ["jpg", "jpeg", "png", "webp"];
@@ -194,7 +238,6 @@
       var ref2 = useState(false), allFailed = ref2[0], setAllFailed = ref2[1];
       var sizeClass = size === "large" ? "w-28 h-28 sm:w-36 sm:h-36" : "w-20 h-20 sm:w-28 sm:h-28";
       var emojiSize = size === "large" ? "text-7xl sm:text-8xl" : "text-5xl sm:text-6xl";
-
       if (allFailed || !animal.imageBase) {
         return e("span", { className: emojiSize + " leading-none select-none" }, animal.emoji);
       }
@@ -209,7 +252,6 @@
       });
     }
 
-    // Lightning Bolt
     function LightningBolt(props) {
       if (!props.visible) return null;
       return e("div", { className: "absolute inset-0 flex items-center justify-center z-20 pointer-events-none lightning-flash" },
@@ -220,16 +262,12 @@
               e("stop", { offset: "100%", stopColor: "#FF8C00" })
             )
           ),
-          e("polygon", {
-            points: "45,0 15,55 35,55 20,120 65,50 42,50 58,0",
-            fill: "url(#boltGrad)", stroke: "#FFA500", strokeWidth: "2"
-          })
+          e("polygon", { points: "45,0 15,55 35,55 20,120 65,50 42,50 58,0", fill: "url(#boltGrad)", stroke: "#FFA500", strokeWidth: "2" })
         ),
         e("div", { className: "absolute inset-0 bg-yellow-400/10 rounded-3xl" })
       );
     }
 
-    // Stat Bar
     function StatBar(props) {
       var label = props.label, v1 = props.value1, v2 = props.value2, delay = props.delay, show = props.showResult;
       var c1 = v1 >= v2 ? "bg-green-400" : "bg-red-400";
@@ -239,8 +277,7 @@
         e("div", { className: "flex items-center gap-2" },
           e("div", { className: "flex-1 flex justify-end" },
             e("div", { className: "w-full bg-gray-800 rounded-full h-4 overflow-hidden" },
-              e("div", { className: "h-full rounded-full " + c1 + (show ? " stat-bar-animate stat-bar-delay-" + delay : ""),
-                style: { width: show ? (v1) + "%" : "0%", float: "right" } })
+              e("div", { className: "h-full rounded-full " + c1 + (show ? " stat-bar-animate stat-bar-delay-" + delay : ""), style: { width: show ? v1 + "%" : "0%", float: "right" } })
             )
           ),
           e("div", { className: "w-14 text-center text-xs font-bold" },
@@ -250,41 +287,44 @@
           ),
           e("div", { className: "flex-1" },
             e("div", { className: "w-full bg-gray-800 rounded-full h-4 overflow-hidden" },
-              e("div", { className: "h-full rounded-full " + c2 + (show ? " stat-bar-animate stat-bar-delay-" + delay : ""),
-                style: { width: show ? (v2) + "%" : "0%" } })
+              e("div", { className: "h-full rounded-full " + c2 + (show ? " stat-bar-animate stat-bar-delay-" + delay : ""), style: { width: show ? v2 + "%" : "0%" } })
             )
           )
         )
       );
     }
 
-    // Header
     function Header(props) {
-      return e("div", { className: "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-4 py-3 border-b border-gray-700/50" },
-        e("div", { className: "max-w-lg mx-auto flex items-center justify-between" },
-          e("div", null,
-            e("h1", { className: "text-lg font-black tracking-tight" },
-              e("span", { className: "text-orange-400" }, "ANIMAL"),
-              e("span", { className: "text-white" }, " FACEOFF")
+      return e("div", null,
+        e("div", { className: "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-4 py-3 border-b border-gray-700/50" },
+          e("div", { className: "max-w-lg mx-auto flex items-center justify-between" },
+            e("div", null,
+              e("h1", { className: "text-lg font-black tracking-tight" },
+                e("span", { className: "text-orange-400" }, "ANIMAL"),
+                e("span", { className: "text-white" }, " FACEOFF")
+              )
+            ),
+            e("div", { className: "flex items-center gap-4 text-sm" },
+              props.streak >= 3 ? e("span", { className: "streak-fire font-bold text-orange-400" }, "\uD83D\uDD25" + props.streak) : null,
+              e("div", { className: "text-center" },
+                e("div", { className: "text-gray-400 text-xs" }, "SCORE"),
+                e("div", { className: "font-bold text-orange-400" }, props.score)
+              ),
+              e("div", { className: "text-center" },
+                e("div", { className: "text-gray-400 text-xs" }, "ROUND"),
+                e("div", { className: "font-bold" }, props.round + "/" + TOURNAMENT_ROUNDS)
+              ),
+              e("button", { onClick: props.onLeaderboard, className: "p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 active:scale-95 transition-all" }, "\uD83C\uDFC6")
             )
-          ),
-          e("div", { className: "flex items-center gap-4 text-sm" },
-            props.streak >= 3 ? e("span", { className: "streak-fire font-bold text-orange-400" }, "\uD83D\uDD25" + props.streak) : null,
-            e("div", { className: "text-center" },
-              e("div", { className: "text-gray-400 text-xs" }, "SCORE"),
-              e("div", { className: "font-bold text-orange-400" }, props.score)
-            ),
-            e("div", { className: "text-center" },
-              e("div", { className: "text-gray-400 text-xs" }, "ROUND"),
-              e("div", { className: "font-bold" }, props.round)
-            ),
-            e("button", { onClick: props.onLeaderboard, className: "p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 active:scale-95 transition-all", "aria-label": "Leaderboard" }, "\uD83C\uDFC6")
           )
+        ),
+        // Progress bar
+        e("div", { className: "w-full h-1 bg-gray-800" },
+          e("div", { className: "h-full bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-500", style: { width: (props.round / TOURNAMENT_ROUNDS * 100) + "%" } })
         )
       );
     }
 
-    // Animal Card
     function AnimalCard(props) {
       var animal = props.animal, side = props.side, disabled = props.disabled, result = props.result, isWinner = props.isWinner, isLoser = props.isLoser;
       var cardClass = "animal-card relative flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl ";
@@ -308,21 +348,19 @@
       );
     }
 
-    // Result Modal
     function ResultModal(props) {
       if (!props.matchup || !props.winner) return null;
       var left = props.matchup.left, right = props.matchup.right;
       var isCorrect = props.isCorrect;
+      var isFinalRound = props.round >= TOURNAMENT_ROUNDS;
       return e("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in" },
         e("div", { className: "bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[85vh] overflow-y-auto" },
-          // Result header
           e("div", { className: "p-5 text-center rounded-t-2xl " + (isCorrect ? "bg-gradient-to-b from-green-900/50 to-transparent" : "bg-gradient-to-b from-red-900/50 to-transparent") },
             e("div", { className: "text-4xl mb-2" }, isCorrect ? "\uD83C\uDF89" : "\uD83D\uDE14"),
             e("div", { className: "text-xl font-black " + (isCorrect ? "text-green-400" : "text-red-400") }, isCorrect ? "CORRECT!" : "WRONG!"),
             e("div", { className: "text-gray-400 text-sm mt-1" }, props.winner.name + " wins this round!"),
             isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + " streak! +" + props.points + " pts") : null
           ),
-          // Stat comparison
           e("div", { className: "px-5 py-4" },
             e("div", { className: "flex justify-between items-center mb-4" },
               e("div", { className: "text-center flex-1" },
@@ -342,17 +380,17 @@
             e(StatBar, { label: "Defense", value1: left.stats.defense, value2: right.stats.defense, delay: 3, showResult: true }),
             e(StatBar, { label: "Aggression", value1: left.stats.aggression, value2: right.stats.aggression, delay: 4, showResult: true })
           ),
-          // Next button
           e("div", { className: "px-5 pb-5" },
-            e("button", { onClick: props.onNext, className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-orange-500/20" }, "NEXT ROUND \u27A1\uFE0F")
+            e("button", { onClick: props.onNext, className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-orange-500/20" },
+              isFinalRound ? "FINISH TOURNAMENT \uD83C\uDFC6" : "NEXT ROUND \u27A1\uFE0F"
+            )
           )
         )
       );
     }
 
-    // Leaderboard Modal
     function LeaderboardModal(props) {
-      var entries = props.entries, userName = props.userName;
+      var entries = props.entries, userName = props.userName, isGlobal = props.source === "global";
       var userRank = entries.findIndex(function(x) { return x.name === userName; }) + 1;
       var medals = ["\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"];
       return e("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in" },
@@ -360,6 +398,9 @@
           e("div", { className: "p-5 text-center border-b border-gray-700/50" },
             e("div", { className: "text-3xl mb-2" }, "\uD83C\uDFC6"),
             e("h2", { className: "text-xl font-black" }, "LEADERBOARD"),
+            e("div", { className: "inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold " + (isGlobal ? "bg-green-500/20 text-green-400" : "bg-gray-700 text-gray-400") },
+              isGlobal ? "\uD83C\uDF10 GLOBAL" : "\uD83D\uDCF1 THIS DEVICE"
+            ),
             userRank > 0 ? e("div", { className: "text-sm text-gray-400 mt-1" }, "Your rank: #" + userRank) : null
           ),
           e("div", { className: "p-4" },
@@ -367,7 +408,7 @@
               e("div", { className: "text-center text-gray-500 py-8" },
                 e("div", { className: "text-4xl mb-3" }, "\uD83C\uDFAE"),
                 e("div", null, "No scores yet!"),
-                e("div", { className: "text-sm mt-1" }, "Be the first on the board")
+                e("div", { className: "text-sm mt-1" }, "Complete a tournament to get on the board")
               ) :
               e("div", { className: "space-y-2" },
                 entries.map(function(entry, i) {
@@ -380,8 +421,9 @@
                       e("span", { className: "text-lg w-8 text-center" },
                         i < 3 ? medals[i] : e("span", { className: "text-gray-500 text-sm font-bold" }, "#" + (i + 1))
                       ),
-                      e("span", { className: "font-semibold " + (isUser ? "text-orange-400" : "") },
-                        entry.name + (isUser ? " (you)" : "")
+                      e("div", null,
+                        e("span", { className: "font-semibold " + (isUser ? "text-orange-400" : "") }, entry.name + (isUser ? " (you)" : "")),
+                        entry.roundsCorrect != null ? e("div", { className: "text-xs text-gray-500" }, entry.roundsCorrect + "/" + TOURNAMENT_ROUNDS + " correct") : null
                       )
                     ),
                     e("span", { className: "font-bold text-lg" }, entry.score)
@@ -396,7 +438,6 @@
       );
     }
 
-    // Name Entry
     function NameEntry(props) {
       var ref = useState(""), name = ref[0], setName = ref[1];
       var inputRef = useRef(null);
@@ -433,6 +474,75 @@
       );
     }
 
+    function TournamentReady(props) {
+      return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
+        e("div", { className: "text-center fade-in-up w-full max-w-sm" },
+          e("div", { className: "text-6xl mb-4" }, "\u2694\uFE0F"),
+          e("h1", { className: "text-3xl font-black mb-2" },
+            e("span", { className: "text-orange-400" }, "TOURNAMENT"),
+            e("span", { className: "text-white" }, " MODE")
+          ),
+          e("p", { className: "text-gray-400 mb-2" }, "Welcome, " + props.playerName + "!"),
+          e("p", { className: "text-gray-500 text-sm mb-8" }, TOURNAMENT_ROUNDS + " rounds \u2022 No repeated matchups \u2022 Best score wins"),
+          e("div", { className: "space-y-3" },
+            e("button", {
+              onClick: props.onStart,
+              className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-orange-500/20"
+            }, "START TOURNAMENT \u2694\uFE0F"),
+            e("button", {
+              onClick: props.onLeaderboard,
+              className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
+            }, "VIEW LEADERBOARD \uD83C\uDFC6")
+          )
+        )
+      );
+    }
+
+    function TournamentEnd(props) {
+      var pct = Math.round((props.roundsCorrect / TOURNAMENT_ROUNDS) * 100);
+      var grade;
+      if (pct >= 90) grade = { label: "LEGENDARY", color: "text-yellow-400", emoji: "\uD83C\uDFC6" };
+      else if (pct >= 70) grade = { label: "EXCELLENT", color: "text-green-400", emoji: "\uD83C\uDF1F" };
+      else if (pct >= 50) grade = { label: "GOOD", color: "text-blue-400", emoji: "\uD83D\uDC4D" };
+      else grade = { label: "KEEP TRYING", color: "text-gray-400", emoji: "\uD83D\uDCAA" };
+
+      return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
+        e("div", { className: "text-center fade-in-up w-full max-w-sm" },
+          e("div", { className: "text-6xl mb-4" }, grade.emoji),
+          e("h1", { className: "text-2xl font-black mb-1 " + grade.color }, grade.label),
+          e("p", { className: "text-gray-400 mb-6" }, "Tournament Complete!"),
+          e("div", { className: "grid grid-cols-2 gap-3 mb-6" },
+            e("div", { className: "bg-gray-800/60 rounded-xl p-4" },
+              e("div", { className: "text-2xl font-black text-orange-400" }, props.score),
+              e("div", { className: "text-xs text-gray-400 uppercase" }, "Final Score")
+            ),
+            e("div", { className: "bg-gray-800/60 rounded-xl p-4" },
+              e("div", { className: "text-2xl font-black text-green-400" }, props.roundsCorrect + "/" + TOURNAMENT_ROUNDS),
+              e("div", { className: "text-xs text-gray-400 uppercase" }, "Correct")
+            ),
+            e("div", { className: "bg-gray-800/60 rounded-xl p-4" },
+              e("div", { className: "text-2xl font-black text-orange-400" }, props.bestStreak),
+              e("div", { className: "text-xs text-gray-400 uppercase" }, "Best Streak")
+            ),
+            e("div", { className: "bg-gray-800/60 rounded-xl p-4" },
+              e("div", { className: "text-2xl font-black text-blue-400" }, pct + "%"),
+              e("div", { className: "text-xs text-gray-400 uppercase" }, "Accuracy")
+            )
+          ),
+          e("div", { className: "space-y-3" },
+            e("button", {
+              onClick: props.onPlayAgain,
+              className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-orange-500/20"
+            }, "PLAY AGAIN \uD83D\uDD01"),
+            e("button", {
+              onClick: props.onLeaderboard,
+              className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
+            }, "LEADERBOARD \uD83C\uDFC6")
+          )
+        )
+      );
+    }
+
     // ==================== MAIN GAME ====================
     function AnimalFaceoffGame() {
       var gsRef = useState("loading"), gameState = gsRef[0], setGameState = gsRef[1];
@@ -444,44 +554,77 @@
       var stRef = useState(0), streak = stRef[0], setStreak = stRef[1];
       var unRef = useState(""), userName = unRef[0], setUserName = unRef[1];
       var lbRef = useState([]), leaderboard = lbRef[0], setLeaderboard = lbRef[1];
-      var rmRef = useState([]), recentMatchups = rmRef[0], setRecentMatchups = rmRef[1];
       var slRef = useState(false), showLightning = slRef[0], setShowLightning = slRef[1];
       var lpRef = useState(0), lastPoints = lpRef[0], setLastPoints = lpRef[1];
       var akRef = useState(0), animKey = akRef[0], setAnimKey = akRef[1];
+      // Tournament state
+      var tmRef = useState([]), tournamentMatchups = tmRef[0], setTournamentMatchups = tmRef[1];
+      var tiRef = useState(null), tournamentId = tiRef[0], setTournamentId = tiRef[1];
+      var rcRef = useState(0), roundsCorrect = rcRef[0], setRoundsCorrect = rcRef[1];
+      var bsRef = useState(0), bestStreak = bsRef[0], setBestStreak = bsRef[1];
+      var lsRef = useState("local"), leaderboardSource = lsRef[0], setLeaderboardSource = lsRef[1];
+      var prevGameStateRef = useRef("loading");
 
+      // Initialize
       useEffect(function() {
         var session = loadSession();
         if (session && session.name) {
           setUserName(session.name);
-          setScore(session.score || 0);
-          setRound(session.round || 1);
-          setStreak(session.streak || 0);
-          setRecentMatchups(session.recentMatchups || []);
-          setGameState("playing");
+          if (session.tournamentMatchups && session.tournamentMatchups.length > 0 && session.gameState === "playing") {
+            setTournamentMatchups(session.tournamentMatchups);
+            setTournamentId(session.tournamentId);
+            setScore(session.score || 0);
+            setRound(session.round || 1);
+            setStreak(session.streak || 0);
+            setRoundsCorrect(session.roundsCorrect || 0);
+            setBestStreak(session.bestStreak || 0);
+            setCurrentMatchup(session.tournamentMatchups[(session.round || 1) - 1]);
+            setAnimKey(function(k) { return k + 1; });
+            setGameState("playing");
+          } else {
+            setGameState("tournament_ready");
+          }
         } else {
           setGameState("name_entry");
         }
         setLeaderboard(loadLeaderboard());
       }, []);
 
+      // Save session when playing
       useEffect(function() {
-        if (gameState === "playing" && !currentMatchup) {
-          var matchup = generateMatchup(recentMatchups);
-          setCurrentMatchup(matchup);
-          setSelectedAnimal(null);
-          setWinner(null);
-          setShowLightning(false);
-          setAnimKey(function(k) { return k + 1; });
+        if (userName && gameState === "playing" && tournamentMatchups.length > 0) {
+          saveSession({
+            name: userName, score: score, round: round, streak: streak,
+            roundsCorrect: roundsCorrect, bestStreak: bestStreak,
+            tournamentMatchups: tournamentMatchups, tournamentId: tournamentId,
+            gameState: "playing"
+          });
         }
-      }, [gameState, currentMatchup]);
+      }, [score, round, streak, userName, roundsCorrect, bestStreak, tournamentMatchups, tournamentId, gameState]);
 
-      useEffect(function() {
-        if (userName) {
-          saveSession({ name: userName, score: score, round: round, streak: streak, recentMatchups: recentMatchups });
-        }
-      }, [score, round, streak, userName, recentMatchups]);
+      function handleNameSubmit(name) {
+        setUserName(name);
+        saveSession({ name: name });
+        setGameState("tournament_ready");
+      }
 
-      function handleNameSubmit(name) { setUserName(name); setGameState("playing"); }
+      function handleStartTournament() {
+        var matchups = generateTournamentMatchups();
+        var tid = generateUUID();
+        setTournamentMatchups(matchups);
+        setTournamentId(tid);
+        setScore(0);
+        setRound(1);
+        setStreak(0);
+        setRoundsCorrect(0);
+        setBestStreak(0);
+        setCurrentMatchup(matchups[0]);
+        setSelectedAnimal(null);
+        setWinner(null);
+        setShowLightning(false);
+        setAnimKey(function(k) { return k + 1; });
+        setGameState("playing");
+      }
 
       function handleAnimalSelect(animal) {
         if (gameState !== "playing" || !currentMatchup) return;
@@ -497,36 +640,104 @@
         setStreak(newStreak);
         setLastPoints(points);
         setScore(function(s) { return s + points; });
-        setRecentMatchups(function(prev) { return prev.concat([currentMatchup.key]).slice(-15); });
+        if (isCorrect) setRoundsCorrect(function(rc) { return rc + 1; });
+        setBestStreak(function(prev) { return Math.max(prev, newStreak); });
         setTimeout(function() { setShowLightning(false); setGameState("result"); }, 500);
       }
 
       function handleNextRound() {
-        setRound(function(r) { return r + 1; });
-        setCurrentMatchup(null);
-        setGameState("playing");
-        updateLeaderboard(userName, score);
-        setLeaderboard(loadLeaderboard());
+        var nextRound = round + 1;
+        if (nextRound > TOURNAMENT_ROUNDS) {
+          // Tournament over
+          updateLocalLeaderboard(userName, score);
+          setLeaderboard(loadLeaderboard());
+          submitScoreToSupabase({
+            player_name: userName,
+            score: score,
+            streak: bestStreak,
+            rounds_correct: roundsCorrect,
+            tournament_id: tournamentId
+          });
+          saveSession({ name: userName });
+          setGameState("tournament_end");
+        } else {
+          setRound(nextRound);
+          setCurrentMatchup(tournamentMatchups[nextRound - 1]);
+          setSelectedAnimal(null);
+          setWinner(null);
+          setShowLightning(false);
+          setAnimKey(function(k) { return k + 1; });
+          setGameState("playing");
+        }
+      }
+
+      function handlePlayAgain() {
+        saveSession({ name: userName });
+        setGameState("tournament_ready");
       }
 
       function handleShowLeaderboard() {
-        updateLeaderboard(userName, score);
+        prevGameStateRef.current = gameState;
+        updateLocalLeaderboard(userName, score);
         setLeaderboard(loadLeaderboard());
+        setLeaderboardSource("local");
         setGameState("leaderboard");
+        fetchGlobalLeaderboard().then(function(data) {
+          if (data && data.length > 0) {
+            var formatted = data.map(function(row) {
+              return { name: row.player_name, score: row.score, streak: row.streak, roundsCorrect: row.rounds_correct };
+            });
+            setLeaderboard(formatted);
+            setLeaderboardSource("global");
+          }
+        });
       }
 
-      function handleCloseLeaderboard() { setGameState("playing"); }
+      function handleCloseLeaderboard() {
+        var prev = prevGameStateRef.current;
+        if (prev === "playing" || prev === "selected" || prev === "result") {
+          setGameState("playing");
+        } else if (prev === "tournament_end") {
+          setGameState("tournament_end");
+        } else {
+          setGameState("tournament_ready");
+        }
+      }
 
+      // Loading
       if (gameState === "loading") {
         return e("div", { className: "min-h-screen flex items-center justify-center" },
           e("div", { className: "text-2xl font-bold text-orange-400 animate-pulse" }, "Loading...")
         );
       }
 
+      // Name entry
       if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit });
+
+      // Tournament ready
+      if (gameState === "tournament_ready") {
+        return e("div", null,
+          e(TournamentReady, { playerName: userName, onStart: handleStartTournament, onLeaderboard: handleShowLeaderboard }),
+          gameState === "leaderboard" ? e(LeaderboardModal, { entries: leaderboard, userName: userName, source: leaderboardSource, onClose: handleCloseLeaderboard }) : null
+        );
+      }
+
+      // Tournament end
+      if (gameState === "tournament_end") {
+        return e(TournamentEnd, {
+          score: score, roundsCorrect: roundsCorrect, bestStreak: bestStreak,
+          onPlayAgain: handlePlayAgain, onLeaderboard: handleShowLeaderboard
+        });
+      }
+
+      // Leaderboard (standalone, from tournament_ready or tournament_end)
+      if (gameState === "leaderboard") {
+        return e(LeaderboardModal, { entries: leaderboard, userName: userName, source: leaderboardSource, onClose: handleCloseLeaderboard });
+      }
 
       var isCorrect = selectedAnimal && winner && selectedAnimal.id === winner.id;
 
+      // Main game (playing / selected / result)
       return e("div", { className: "min-h-screen flex flex-col bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950" },
         e(Header, { score: score, round: round, streak: streak, onLeaderboard: handleShowLeaderboard }),
         e("div", { className: "flex-1 flex flex-col items-center justify-center p-4 sm:p-6" },
@@ -549,9 +760,8 @@
             ) : null
           )
         ),
-        e("div", { className: "text-center py-3 text-gray-600 text-xs" }, "Heavyweight Division"),
-        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, onNext: handleNextRound }) : null,
-        gameState === "leaderboard" ? e(LeaderboardModal, { entries: leaderboard, userName: userName, currentScore: score, onClose: handleCloseLeaderboard }) : null
+        e("div", { className: "text-center py-3 text-gray-600 text-xs" }, "Heavyweight Division \u2022 Tournament Mode"),
+        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, onNext: handleNextRound }) : null
       );
     }
 
