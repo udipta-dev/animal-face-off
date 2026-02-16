@@ -135,121 +135,121 @@
       // HEAVYWEIGHT - 20 animals
       {
         id: "lion_001", name: "Lion", emoji: "\u{1F981}",
-        image: "images/lion.png",
+        imageBase: "lion",
         weightClass: "heavyweight",
         stats: { strength: 85, speed: 75, defense: 70, aggression: 90 },
       },
       {
         id: "tiger_001", name: "Tiger", emoji: "\u{1F42F}",
-        image: "images/tiger.png",
+        imageBase: "tiger",
         weightClass: "heavyweight",
         stats: { strength: 90, speed: 80, defense: 65, aggression: 85 },
       },
       {
         id: "grizzly_001", name: "Grizzly Bear", emoji: "\u{1F43B}",
-        image: "images/grizzly-bear.png",
+        imageBase: "grizzly-bear",
         weightClass: "heavyweight",
         stats: { strength: 95, speed: 60, defense: 85, aggression: 80 },
       },
       {
         id: "polar_001", name: "Polar Bear", emoji: "\u{1F43B}\u200D\u2744\uFE0F",
-        image: "images/polar-bear.png",
+        imageBase: "polar-bear",
         weightClass: "heavyweight",
         stats: { strength: 92, speed: 55, defense: 88, aggression: 75 },
       },
       {
         id: "gorilla_001", name: "Gorilla", emoji: "\u{1F98D}",
-        image: "images/gorilla.png",
+        imageBase: "gorilla",
         weightClass: "heavyweight",
         stats: { strength: 100, speed: 55, defense: 75, aggression: 70 },
       },
       {
         id: "croc_001", name: "Crocodile", emoji: "\u{1F40A}",
-        image: "images/crocodile.png",
+        imageBase: "crocodile",
         weightClass: "heavyweight",
         stats: { strength: 88, speed: 45, defense: 92, aggression: 85 },
       },
       {
         id: "moose_001", name: "Moose", emoji: "\u{1FACE}",
-        image: "images/moose.png",
+        imageBase: "moose",
         weightClass: "heavyweight",
         stats: { strength: 82, speed: 65, defense: 68, aggression: 72 },
       },
       {
         id: "anaconda_001", name: "Anaconda", emoji: "\u{1F40D}",
-        image: "images/anaconda.png",
+        imageBase: "anaconda",
         weightClass: "heavyweight",
         stats: { strength: 78, speed: 40, defense: 70, aggression: 80 },
       },
       {
         id: "black_bear_001", name: "Black Bear", emoji: "\u{1F43B}",
-        image: "images/black-bear.png",
+        imageBase: "black-bear",
         weightClass: "heavyweight",
         stats: { strength: 78, speed: 65, defense: 72, aggression: 68 },
       },
       {
         id: "bull_001", name: "Bull", emoji: "\u{1F402}",
-        image: "images/bull.png",
+        imageBase: "bull",
         weightClass: "heavyweight",
         stats: { strength: 88, speed: 60, defense: 65, aggression: 95 },
       },
       {
         id: "bison_001", name: "Bison", emoji: "\u{1F9AC}",
-        image: "images/bison.png",
+        imageBase: "bison",
         weightClass: "heavyweight",
         stats: { strength: 90, speed: 58, defense: 80, aggression: 78 },
       },
       {
         id: "jaguar_001", name: "Jaguar", emoji: "\u{1F406}",
-        image: "images/jaguar.png",
+        imageBase: "jaguar",
         weightClass: "heavyweight",
         stats: { strength: 82, speed: 82, defense: 60, aggression: 88 },
       },
       {
         id: "silverback_001", name: "Silverback", emoji: "\u{1F98D}",
-        image: "images/silverback.png",
+        imageBase: "silverback",
         weightClass: "heavyweight",
         stats: { strength: 98, speed: 50, defense: 78, aggression: 75 },
       },
       {
         id: "komodo_001", name: "Komodo Dragon", emoji: "\u{1F98E}",
-        image: "images/komodo-dragon.png",
+        imageBase: "komodo-dragon",
         weightClass: "heavyweight",
         stats: { strength: 72, speed: 55, defense: 82, aggression: 90 },
       },
       {
         id: "cassowary_001", name: "Cassowary", emoji: "\u{1F426}",
-        image: "images/cassowary.png",
+        imageBase: "cassowary",
         weightClass: "heavyweight",
         stats: { strength: 65, speed: 78, defense: 55, aggression: 92 },
       },
       {
         id: "wildebeest_001", name: "Wildebeest", emoji: "\u{1F403}",
-        image: "images/wildebeest.png",
+        imageBase: "wildebeest",
         weightClass: "heavyweight",
         stats: { strength: 75, speed: 72, defense: 60, aggression: 70 },
       },
       {
         id: "kangaroo_001", name: "Kangaroo", emoji: "\u{1F998}",
-        image: "images/kangaroo.png",
+        imageBase: "kangaroo",
         weightClass: "heavyweight",
         stats: { strength: 70, speed: 75, defense: 58, aggression: 82 },
       },
       {
         id: "leopard_seal_001", name: "Leopard Seal", emoji: "\u{1F9AD}",
-        image: "images/leopard-seal.png",
+        imageBase: "leopard-seal",
         weightClass: "heavyweight",
         stats: { strength: 76, speed: 70, defense: 68, aggression: 86 },
       },
       {
         id: "walrus_001", name: "Walrus", emoji: "\u{1F9AD}",
-        image: "images/walrus.png",
+        imageBase: "walrus",
         weightClass: "heavyweight",
         stats: { strength: 85, speed: 35, defense: 90, aggression: 65 },
       },
       {
         id: "ostrich_001", name: "Ostrich", emoji: "\u{1F426}",
-        image: "images/ostrich.png",
+        imageBase: "ostrich",
         weightClass: "heavyweight",
         stats: { strength: 60, speed: 90, defense: 50, aggression: 68 },
       },
@@ -334,21 +334,31 @@
 
     // ==================== COMPONENTS ====================
 
-    // Animal Image Component - tries real image, falls back to emoji
+    // Animal Image Component - tries jpg/jpeg/png/webp, falls back to emoji
     const AnimalAvatar = memo(({ animal, size = "normal" }) => {
-      const [imgFailed, setImgFailed] = useState(false);
+      const extensions = ["jpg", "jpeg", "png", "webp"];
+      const [extIndex, setExtIndex] = useState(0);
+      const [allFailed, setAllFailed] = useState(false);
       const sizeClass = size === "large" ? "w-32 h-32 sm:w-40 sm:h-40" : "w-24 h-24 sm:w-32 sm:h-32";
       const emojiSize = size === "large" ? "text-7xl sm:text-8xl" : "text-6xl sm:text-7xl";
 
-      if (imgFailed || !animal.image) {
+      const handleError = () => {
+        if (extIndex < extensions.length - 1) {
+          setExtIndex(i => i + 1);
+        } else {
+          setAllFailed(true);
+        }
+      };
+
+      if (allFailed || !animal.imageBase) {
         return <span className={`${emojiSize} leading-none`}>{animal.emoji}</span>;
       }
       return (
         <img
-          src={animal.image}
+          src={`images/${animal.imageBase}.${extensions[extIndex]}`}
           alt={animal.name}
           className={`${sizeClass} object-cover rounded-full border-3 border-white/20`}
-          onError={() => setImgFailed(true)}
+          onError={handleError}
         />
       );
     });
