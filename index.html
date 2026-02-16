@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Animal Faceoff</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a1a;
+      color: white;
+      overflow-x: hidden;
+      min-height: 100vh;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Animations */
+    @keyframes slideInLeft {
+      from { transform: translateX(-120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes lightningFlash {
+      0% { opacity: 0; transform: scale(0.5); }
+      30% { opacity: 1; transform: scale(1.2); }
+      60% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.1); }
+    }
+    @keyframes pulseWin {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    @keyframes statBarGrow {
+      from { width: 0%; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    @keyframes vsPopIn {
+      0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+      60% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,165,0,0.3); }
+      50% { box-shadow: 0 0 40px rgba(255,165,0,0.6); }
+    }
+    @keyframes streakFire {
+      0%, 100% { text-shadow: 0 0 10px #ff6600, 0 0 20px #ff3300; }
+      50% { text-shadow: 0 0 20px #ff6600, 0 0 40px #ff3300, 0 0 60px #ff0000; }
+    }
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+
+    .slide-in-left { animation: slideInLeft 0.5s ease-out forwards; }
+    .slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
+    .lightning-flash { animation: lightningFlash 0.4s ease-out forwards; }
+    .pulse-win { animation: pulseWin 0.6s ease-in-out infinite; }
+    .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+    .shake { animation: shake 0.4s ease-out; }
+    .vs-pop { animation: vsPopIn 0.6s ease-out forwards; animation-delay: 0.3s; opacity: 0; }
+    .glow-pulse { animation: glowPulse 2s ease-in-out infinite; }
+    .streak-fire { animation: streakFire 1s ease-in-out infinite; }
+
+    .stat-bar-animate {
+      animation: statBarGrow 0.8s ease-out forwards;
+    }
+    .stat-bar-delay-1 { animation-delay: 0.1s; }
+    .stat-bar-delay-2 { animation-delay: 0.2s; }
+    .stat-bar-delay-3 { animation-delay: 0.3s; }
+    .stat-bar-delay-4 { animation-delay: 0.4s; }
+
+    .animal-card {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .animal-card:active {
+      transform: scale(0.96);
+    }
+
+    .animal-image {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+
+    .animal-emoji {
+      font-size: 80px;
+      line-height: 1;
+    }
+
+    @media (min-width: 640px) {
+      .animal-image { width: 160px; height: 160px; }
+      .animal-emoji { font-size: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef, memo } = React;
+
+    // ==================== ANIMAL DATABASE ====================
+    const animals = [
+      // HEAVYWEIGHT - 20 animals
+      {
+        id: "lion_001", name: "Lion", emoji: "\u{1F981}",
+        image: "images/lion.png",
+        weightClass: "heavyweight",
+        stats: { strength: 85, speed: 75, defense: 70, aggression: 90 },
+      },
+      {
+        id: "tiger_001", name: "Tiger", emoji: "\u{1F42F}",
+        image: "images/tiger.png",
+        weightClass: "heavyweight",
+        stats: { strength: 90, speed: 80, defense: 65, aggression: 85 },
+      },
+      {
+        id: "grizzly_001", name: "Grizzly Bear", emoji: "\u{1F43B}",
+        image: "images/grizzly-bear.png",
+        weightClass: "heavyweight",
+        stats: { strength: 95, speed: 60, defense: 85, aggression: 80 },
+      },
+      {
+        id: "polar_001", name: "Polar Bear", emoji: "\u{1F43B}\u200D\u2744\uFE0F",
+        image: "images/polar-bear.png",
+        weightClass: "heavyweight",
+        stats: { strength: 92, speed: 55, defense: 88, aggression: 75 },
+      },
+      {
+        id: "gorilla_001", name: "Gorilla", emoji: "\u{1F98D}",
+        image: "images/gorilla.png",
+        weightClass: "heavyweight",
+        stats: { strength: 100, speed: 55, defense: 75, aggression: 70 },
+      },
+      {
+        id: "croc_001", name: "Crocodile", emoji: "\u{1F40A}",
+        image: "images/crocodile.png",
+        weightClass: "heavyweight",
+        stats: { strength: 88, speed: 45, defense: 92, aggression: 85 },
+      },
+      {
+        id: "moose_001", name: "Moose", emoji: "\u{1FACE}",
+        image: "images/moose.png",
+        weightClass: "heavyweight",
+        stats: { strength: 82, speed: 65, defense: 68, aggression: 72 },
+      },
+      {
+        id: "anaconda_001", name: "Anaconda", emoji: "\u{1F40D}",
+        image: "images/anaconda.png",
+        weightClass: "heavyweight",
+        stats: { strength: 78, speed: 40, defense: 70, aggression: 80 },
+      },
+      {
+        id: "black_bear_001", name: "Black Bear", emoji: "\u{1F43B}",
+        image: "images/black-bear.png",
+        weightClass: "heavyweight",
+        stats: { strength: 78, speed: 65, defense: 72, aggression: 68 },
+      },
+      {
+        id: "bull_001", name: "Bull", emoji: "\u{1F402}",
+        image: "images/bull.png",
+        weightClass: "heavyweight",
+        stats: { strength: 88, speed: 60, defense: 65, aggression: 95 },
+      },
+      {
+        id: "bison_001", name: "Bison", emoji: "\u{1F9AC}",
+        image: "images/bison.png",
+        weightClass: "heavyweight",
+        stats: { strength: 90, speed: 58, defense: 80, aggression: 78 },
+      },
+      {
+        id: "jaguar_001", name: "Jaguar", emoji: "\u{1F406}",
+        image: "images/jaguar.png",
+        weightClass: "heavyweight",
+        stats: { strength: 82, speed: 82, defense: 60, aggression: 88 },
+      },
+      {
+        id: "silverback_001", name: "Silverback", emoji: "\u{1F98D}",
+        image: "images/silverback.png",
+        weightClass: "heavyweight",
+        stats: { strength: 98, speed: 50, defense: 78, aggression: 75 },
+      },
+      {
+        id: "komodo_001", name: "Komodo Dragon", emoji: "\u{1F98E}",
+        image: "images/komodo-dragon.png",
+        weightClass: "heavyweight",
+        stats: { strength: 72, speed: 55, defense: 82, aggression: 90 },
+      },
+      {
+        id: "cassowary_001", name: "Cassowary", emoji: "\u{1F426}",
+        image: "images/cassowary.png",
+        weightClass: "heavyweight",
+        stats: { strength: 65, speed: 78, defense: 55, aggression: 92 },
+      },
+      {
+        id: "wildebeest_001", name: "Wildebeest", emoji: "\u{1F403}",
+        image: "images/wildebeest.png",
+        weightClass: "heavyweight",
+        stats: { strength: 75, speed: 72, defense: 60, aggression: 70 },
+      },
+      {
+        id: "kangaroo_001", name: "Kangaroo", emoji: "\u{1F998}",
+        image: "images/kangaroo.png",
+        weightClass: "heavyweight",
+        stats: { strength: 70, speed: 75, defense: 58, aggression: 82 },
+      },
+      {
+        id: "leopard_seal_001", name: "Leopard Seal", emoji: "\u{1F9AD}",
+        image: "images/leopard-seal.png",
+        weightClass: "heavyweight",
+        stats: { strength: 76, speed: 70, defense: 68, aggression: 86 },
+      },
+      {
+        id: "walrus_001", name: "Walrus", emoji: "\u{1F9AD}",
+        image: "images/walrus.png",
+        weightClass: "heavyweight",
+        stats: { strength: 85, speed: 35, defense: 90, aggression: 65 },
+      },
+      {
+        id: "ostrich_001", name: "Ostrich", emoji: "\u{1F426}",
+        image: "images/ostrich.png",
+        weightClass: "heavyweight",
+        stats: { strength: 60, speed: 90, defense: 50, aggression: 68 },
+      },
+    ];
+
+    // Calculate fight scores automatically
+    animals.forEach(a => {
+      a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
+    });
+
+    // ==================== FIGHT LOGIC ====================
+    function generateMatchup(recentMatchups) {
+      const available = [...animals];
+      let attempts = 0;
+      while (attempts < 50) {
+        const i = Math.floor(Math.random() * available.length);
+        let j = Math.floor(Math.random() * available.length);
+        while (j === i) j = Math.floor(Math.random() * available.length);
+        const a1 = available[i];
+        const a2 = available[j];
+        const matchupKey = [a1.id, a2.id].sort().join("_vs_");
+        if (!recentMatchups.includes(matchupKey)) {
+          return { left: a1, right: a2, key: matchupKey };
+        }
+        attempts++;
+      }
+      // Fallback: just pick any two different animals
+      const i = Math.floor(Math.random() * available.length);
+      let j = Math.floor(Math.random() * available.length);
+      while (j === i) j = Math.floor(Math.random() * available.length);
+      return { left: available[i], right: available[j], key: [available[i].id, available[j].id].sort().join("_vs_") };
+    }
+
+    function determineWinner(animal1, animal2) {
+      let score1 = animal1.fightScore * (0.9 + Math.random() * 0.2);
+      let score2 = animal2.fightScore * (0.9 + Math.random() * 0.2);
+      return score1 > score2 ? animal1 : animal2;
+    }
+
+    // ==================== STORAGE ====================
+    function loadLeaderboard() {
+      try {
+        const data = localStorage.getItem("af_leaderboard");
+        return data ? JSON.parse(data) : [];
+      } catch { return []; }
+    }
+
+    function saveLeaderboard(entries) {
+      try {
+        localStorage.setItem("af_leaderboard", JSON.stringify(entries));
+      } catch {}
+    }
+
+    function loadSession() {
+      try {
+        const data = localStorage.getItem("af_session");
+        return data ? JSON.parse(data) : null;
+      } catch { return null; }
+    }
+
+    function saveSession(session) {
+      try {
+        localStorage.setItem("af_session", JSON.stringify(session));
+      } catch {}
+    }
+
+    function updateLeaderboard(name, score) {
+      const entries = loadLeaderboard();
+      const existing = entries.find(e => e.name === name);
+      if (existing) {
+        if (score > existing.score) {
+          existing.score = score;
+          existing.timestamp = Date.now();
+          existing.gamesPlayed = (existing.gamesPlayed || 0) + 1;
+        }
+      } else {
+        entries.push({ name, score, timestamp: Date.now(), gamesPlayed: 1 });
+      }
+      entries.sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
+      saveLeaderboard(entries.slice(0, 10));
+    }
+
+    // ==================== COMPONENTS ====================
+
+    // Animal Image Component - tries real image, falls back to emoji
+    const AnimalAvatar = memo(({ animal, size = "normal" }) => {
+      const [imgFailed, setImgFailed] = useState(false);
+      const sizeClass = size === "large" ? "w-32 h-32 sm:w-40 sm:h-40" : "w-24 h-24 sm:w-32 sm:h-32";
+      const emojiSize = size === "large" ? "text-7xl sm:text-8xl" : "text-6xl sm:text-7xl";
+
+      if (imgFailed || !animal.image) {
+        return <span className={`${emojiSize} leading-none`}>{animal.emoji}</span>;
+      }
+      return (
+        <img
+          src={animal.image}
+          alt={animal.name}
+          className={`${sizeClass} object-cover rounded-full border-3 border-white/20`}
+          onError={() => setImgFailed(true)}
+        />
+      );
+    });
+
+    // Lightning Bolt SVG
+    const LightningBolt = ({ visible }) => {
+      if (!visible) return null;
+      return (
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none lightning-flash">
+          <svg width="80" height="120" viewBox="0 0 80 120" fill="none">
+            <polygon
+              points="45,0 15,55 35,55 20,120 65,50 42,50 58,0"
+              fill="url(#boltGrad)"
+              stroke="#FFA500"
+              strokeWidth="2"
+            />
+            <defs>
+              <linearGradient id="boltGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#FFD700" />
+                <stop offset="100%" stopColor="#FF8C00" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="absolute inset-0 bg-yellow-400/10 rounded-3xl"></div>
+        </div>
+      );
+    };
+
+    // Stat Bar Component
+    const StatBar = ({ label, value1, value2, delay, showResult }) => {
+      const max = 100;
+      const color1 = value1 >= value2 ? "bg-green-400" : "bg-red-400";
+      const color2 = value2 >= value1 ? "bg-green-400" : "bg-red-400";
+      return (
+        <div className="mb-3">
+          <div className="text-xs text-gray-400 text-center mb-1 uppercase tracking-wider font-semibold">{label}</div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex justify-end">
+              <div className="w-full bg-gray-800 rounded-full h-4 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${color1} ${showResult ? `stat-bar-animate stat-bar-delay-${delay}` : ''}`}
+                  style={{ width: showResult ? `${(value1 / max) * 100}%` : '0%', float: 'right' }}
+                ></div>
+              </div>
+            </div>
+            <div className="w-14 text-center text-xs font-bold">
+              <span className={value1 >= value2 ? 'text-green-400' : 'text-red-400'}>{value1}</span>
+              <span className="text-gray-500"> : </span>
+              <span className={value2 >= value1 ? 'text-green-400' : 'text-red-400'}>{value2}</span>
+            </div>
+            <div className="flex-1">
+              <div className="w-full bg-gray-800 rounded-full h-4 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${color2} ${showResult ? `stat-bar-animate stat-bar-delay-${delay}` : ''}`}
+                  style={{ width: showResult ? `${(value2 / max) * 100}%` : '0%' }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Header Component
+    const Header = memo(({ score, round, streak, onLeaderboard }) => (
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-4 py-3 border-b border-gray-700/50">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-black tracking-tight">
+              <span className="text-orange-400">ANIMAL</span>
+              <span className="text-white"> FACEOFF</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            {streak >= 3 && (
+              <span className="streak-fire font-bold text-orange-400">
+                \u{1F525}{streak}
+              </span>
+            )}
+            <div className="text-center">
+              <div className="text-gray-400 text-xs">SCORE</div>
+              <div className="font-bold text-orange-400">{score}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-400 text-xs">ROUND</div>
+              <div className="font-bold">{round}</div>
+            </div>
+            <button
+              onClick={onLeaderboard}
+              className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 active:scale-95 transition-all"
+              aria-label="Leaderboard"
+            >
+              \u{1F3C6}
+            </button>
+          </div>
+        </div>
+      </div>
+    ));
+
+    // Animal Card Component
+    const AnimalCard = ({ animal, onSelect, side, disabled, result, isWinner, isLoser }) => {
+      let cardClass = "animal-card relative flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl ";
+      let animClass = side === "left" ? "slide-in-left" : "slide-in-right";
+
+      if (result) {
+        if (isWinner) {
+          cardClass += "bg-gradient-to-b from-green-900/60 to-green-800/30 border-2 border-green-400/60 pulse-win ";
+        } else if (isLoser) {
+          cardClass += "bg-gradient-to-b from-gray-900/80 to-gray-800/40 border-2 border-gray-600/30 opacity-50 grayscale ";
+        }
+      } else {
+        cardClass += "bg-gradient-to-b from-gray-800/80 to-gray-700/40 border-2 border-gray-600/30 hover:border-orange-400/50 glow-pulse ";
+      }
+
+      return (
+        <button
+          onClick={() => !disabled && onSelect(animal)}
+          disabled={disabled}
+          className={`${cardClass} ${animClass} flex-1 min-h-[220px] sm:min-h-[280px]`}
+        >
+          {isWinner && result && (
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
+              WINNER!
+            </div>
+          )}
+          <div className="mb-3">
+            <AnimalAvatar animal={animal} size="large" />
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-center">{animal.name}</div>
+          <div className="text-xs text-gray-400 mt-1 uppercase tracking-wider">
+            {animal.weightClass}
+          </div>
+          {!result && !disabled && (
+            <div className="mt-3 text-xs text-orange-400/80 font-medium">TAP TO SELECT</div>
+          )}
+          {result && isWinner && (
+            <div className="mt-2 text-green-400 text-sm font-bold">+{result.points} pts</div>
+          )}
+        </button>
+      );
+    };
+
+    // Result Modal
+    const ResultModal = ({ matchup, winner, selectedAnimal, points, isCorrect, streak, onNext }) => {
+      if (!matchup || !winner) return null;
+      const { left, right } = matchup;
+      return (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in">
+          <div className="bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[85vh] overflow-y-auto">
+            {/* Result Header */}
+            <div className={`p-5 text-center rounded-t-2xl ${isCorrect ? 'bg-gradient-to-b from-green-900/50 to-transparent' : 'bg-gradient-to-b from-red-900/50 to-transparent'}`}>
+              <div className="text-4xl mb-2">{isCorrect ? '\u{1F389}' : '\u{1F614}'}</div>
+              <div className={`text-xl font-black ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                {isCorrect ? 'CORRECT!' : 'WRONG!'}
+              </div>
+              <div className="text-gray-400 text-sm mt-1">
+                {winner.name} wins this round!
+              </div>
+              {isCorrect && streak >= 3 && (
+                <div className="mt-2 text-orange-400 font-bold streak-fire">
+                  \u{1F525} {streak} streak! +{points} pts
+                </div>
+              )}
+            </div>
+
+            {/* Stat Comparison */}
+            <div className="px-5 py-4">
+              <div className="flex justify-between items-center mb-4">
+                <div className="text-center flex-1">
+                  <AnimalAvatar animal={left} />
+                  <div className="text-sm font-bold mt-1">{left.name}</div>
+                  <div className="text-xs text-gray-500">Total: {left.fightScore}</div>
+                </div>
+                <div className="text-gray-500 text-xs font-bold px-2">VS</div>
+                <div className="text-center flex-1">
+                  <AnimalAvatar animal={right} />
+                  <div className="text-sm font-bold mt-1">{right.name}</div>
+                  <div className="text-xs text-gray-500">Total: {right.fightScore}</div>
+                </div>
+              </div>
+
+              <StatBar label="Strength" value1={left.stats.strength} value2={right.stats.strength} delay={1} showResult={true} />
+              <StatBar label="Speed" value1={left.stats.speed} value2={right.stats.speed} delay={2} showResult={true} />
+              <StatBar label="Defense" value1={left.stats.defense} value2={right.stats.defense} delay={3} showResult={true} />
+              <StatBar label="Aggression" value1={left.stats.aggression} value2={right.stats.aggression} delay={4} showResult={true} />
+            </div>
+
+            {/* Next Button */}
+            <div className="px-5 pb-5">
+              <button
+                onClick={onNext}
+                className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-98 transition-transform shadow-lg shadow-orange-500/20"
+              >
+                NEXT ROUND \u{27A1}\u{FE0F}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Leaderboard Modal
+    const LeaderboardModal = ({ entries, userName, currentScore, onClose }) => {
+      const userRank = entries.findIndex(e => e.name === userName) + 1;
+      return (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in">
+          <div className="bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[80vh] overflow-y-auto">
+            <div className="p-5 text-center border-b border-gray-700/50">
+              <div className="text-3xl mb-2">\u{1F3C6}</div>
+              <h2 className="text-xl font-black">LEADERBOARD</h2>
+              {userRank > 0 && (
+                <div className="text-sm text-gray-400 mt-1">Your rank: #{userRank}</div>
+              )}
+            </div>
+
+            <div className="p-4">
+              {entries.length === 0 ? (
+                <div className="text-center text-gray-500 py-8">
+                  <div className="text-4xl mb-3">\u{1F3AE}</div>
+                  <div>No scores yet!</div>
+                  <div className="text-sm mt-1">Be the first on the board</div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {entries.map((entry, i) => {
+                    const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+                    const isUser = entry.name === userName;
+                    return (
+                      <div
+                        key={i}
+                        className={`flex items-center justify-between p-3 rounded-xl ${
+                          isUser ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-gray-800/50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg w-8 text-center">
+                            {i < 3 ? medals[i] : <span className="text-gray-500 text-sm font-bold">#{i + 1}</span>}
+                          </span>
+                          <span className={`font-semibold ${isUser ? 'text-orange-400' : ''}`}>
+                            {entry.name} {isUser && '(you)'}
+                          </span>
+                        </div>
+                        <span className="font-bold text-lg">{entry.score}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="px-5 pb-5">
+              <button
+                onClick={onClose}
+                className="w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-98 transition-all"
+              >
+                BACK TO GAME
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Name Entry Screen
+    const NameEntry = ({ onSubmit }) => {
+      const [name, setName] = useState('');
+      const inputRef = useRef(null);
+
+      useEffect(() => {
+        setTimeout(() => inputRef.current?.focus(), 300);
+      }, []);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const trimmed = name.trim();
+        if (trimmed.length >= 1 && trimmed.length <= 20) {
+          onSubmit(trimmed);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6">
+          <div className="text-center fade-in-up w-full max-w-sm">
+            <div className="text-6xl mb-4">\u{1F981}</div>
+            <h1 className="text-3xl font-black mb-2">
+              <span className="text-orange-400">ANIMAL</span>
+              <span className="text-white"> FACEOFF</span>
+            </h1>
+            <p className="text-gray-400 mb-8">Predict the winner of epic animal battles!</p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 block mb-2">What's your name?</label>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name..."
+                  maxLength={20}
+                  className="w-full px-4 py-4 bg-gray-800 border-2 border-gray-600 rounded-xl text-white text-center text-lg font-semibold focus:border-orange-400 focus:outline-none transition-colors placeholder-gray-500"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={name.trim().length < 1}
+                className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-98 transition-all shadow-lg shadow-orange-500/20"
+              >
+                LET'S GO! \u{1F525}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // ==================== MAIN GAME COMPONENT ====================
+    function AnimalFaceoffGame() {
+      const [gameState, setGameState] = useState('loading'); // loading | name_entry | playing | selected | result | leaderboard
+      const [currentMatchup, setCurrentMatchup] = useState(null);
+      const [selectedAnimal, setSelectedAnimal] = useState(null);
+      const [winner, setWinner] = useState(null);
+      const [score, setScore] = useState(0);
+      const [round, setRound] = useState(1);
+      const [streak, setStreak] = useState(0);
+      const [userName, setUserName] = useState('');
+      const [leaderboard, setLeaderboard] = useState([]);
+      const [recentMatchups, setRecentMatchups] = useState([]);
+      const [showLightning, setShowLightning] = useState(false);
+      const [lastPoints, setLastPoints] = useState(0);
+      const [animKey, setAnimKey] = useState(0);
+
+      // Initialize game
+      useEffect(() => {
+        const session = loadSession();
+        if (session && session.name) {
+          setUserName(session.name);
+          setScore(session.score || 0);
+          setRound(session.round || 1);
+          setStreak(session.streak || 0);
+          setRecentMatchups(session.recentMatchups || []);
+          setGameState('playing');
+        } else {
+          setGameState('name_entry');
+        }
+        setLeaderboard(loadLeaderboard());
+      }, []);
+
+      // Generate new matchup when entering playing state
+      useEffect(() => {
+        if (gameState === 'playing' && !currentMatchup) {
+          const matchup = generateMatchup(recentMatchups);
+          setCurrentMatchup(matchup);
+          setSelectedAnimal(null);
+          setWinner(null);
+          setShowLightning(false);
+          setAnimKey(k => k + 1);
+        }
+      }, [gameState, currentMatchup]);
+
+      // Save session on state changes
+      useEffect(() => {
+        if (userName) {
+          saveSession({
+            name: userName,
+            score,
+            round,
+            streak,
+            recentMatchups
+          });
+        }
+      }, [score, round, streak, userName, recentMatchups]);
+
+      const handleNameSubmit = (name) => {
+        setUserName(name);
+        setGameState('playing');
+      };
+
+      const handleAnimalSelect = useCallback((animal) => {
+        if (gameState !== 'playing' || !currentMatchup) return;
+
+        setSelectedAnimal(animal);
+        setShowLightning(true);
+        setGameState('selected');
+
+        // Determine winner
+        const roundWinner = determineWinner(currentMatchup.left, currentMatchup.right);
+        setWinner(roundWinner);
+
+        const isCorrect = animal.id === roundWinner.id;
+        const newStreak = isCorrect ? streak + 1 : 0;
+        const streakBonus = isCorrect && newStreak > 0 && newStreak % 5 === 0 ? 5 : 0;
+        const points = isCorrect ? 10 + streakBonus : 0;
+
+        setStreak(newStreak);
+        setLastPoints(points);
+        setScore(s => s + points);
+
+        // Update recent matchups (keep last 5)
+        setRecentMatchups(prev => {
+          const updated = [...prev, currentMatchup.key].slice(-5);
+          return updated;
+        });
+
+        // Show result after lightning effect
+        setTimeout(() => {
+          setShowLightning(false);
+          setGameState('result');
+        }, 500);
+      }, [gameState, currentMatchup, streak]);
+
+      const handleNextRound = () => {
+        setRound(r => r + 1);
+        setCurrentMatchup(null);
+        setGameState('playing');
+
+        // Update leaderboard
+        updateLeaderboard(userName, score);
+        setLeaderboard(loadLeaderboard());
+      };
+
+      const handleShowLeaderboard = () => {
+        updateLeaderboard(userName, score);
+        setLeaderboard(loadLeaderboard());
+        setGameState('leaderboard');
+      };
+
+      const handleCloseLeaderboard = () => {
+        setGameState(currentMatchup ? 'playing' : 'playing');
+      };
+
+      if (gameState === 'loading') {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-2xl font-bold text-orange-400 animate-pulse">Loading...</div>
+          </div>
+        );
+      }
+
+      if (gameState === 'name_entry') {
+        return <NameEntry onSubmit={handleNameSubmit} />;
+      }
+
+      const isCorrect = selectedAnimal && winner && selectedAnimal.id === winner.id;
+
+      return (
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
+          {/* Header */}
+          <Header
+            score={score}
+            round={round}
+            streak={streak}
+            onLeaderboard={handleShowLeaderboard}
+          />
+
+          {/* Main Game Area */}
+          <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
+            <div className="w-full max-w-lg">
+              {/* Round Title */}
+              <div className="text-center mb-4 fade-in">
+                <div className="text-sm text-gray-400 uppercase tracking-widest font-semibold">
+                  Who Would Win?
+                </div>
+              </div>
+
+              {/* Matchup Cards */}
+              {currentMatchup && (
+                <div className="relative flex gap-3 sm:gap-4" key={animKey}>
+                  <AnimalCard
+                    animal={currentMatchup.left}
+                    onSelect={handleAnimalSelect}
+                    side="left"
+                    disabled={gameState !== 'playing'}
+                    result={gameState === 'result'}
+                    isWinner={gameState === 'result' && winner?.id === currentMatchup.left.id}
+                    isLoser={gameState === 'result' && winner?.id !== currentMatchup.left.id}
+                  />
+
+                  {/* VS Badge */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 vs-pop">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 border-2 border-orange-300/30">
+                      <span className="text-white font-black text-sm sm:text-base">VS</span>
+                    </div>
+                  </div>
+
+                  {/* Lightning Effect */}
+                  <LightningBolt visible={showLightning} />
+
+                  <AnimalCard
+                    animal={currentMatchup.right}
+                    onSelect={handleAnimalSelect}
+                    side="right"
+                    disabled={gameState !== 'playing'}
+                    result={gameState === 'result'}
+                    isWinner={gameState === 'result' && winner?.id === currentMatchup.right.id}
+                    isLoser={gameState === 'result' && winner?.id !== currentMatchup.right.id}
+                  />
+                </div>
+              )}
+
+              {/* Streak Display */}
+              {streak >= 3 && gameState === 'playing' && (
+                <div className="text-center mt-4 fade-in">
+                  <span className="text-orange-400 font-bold streak-fire text-sm">
+                    \u{1F525} {streak} correct in a row!
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center py-3 text-gray-600 text-xs">
+            Heavyweight Division
+          </div>
+
+          {/* Result Modal */}
+          {gameState === 'result' && (
+            <ResultModal
+              matchup={currentMatchup}
+              winner={winner}
+              selectedAnimal={selectedAnimal}
+              points={lastPoints}
+              isCorrect={isCorrect}
+              streak={streak}
+              onNext={handleNextRound}
+            />
+          )}
+
+          {/* Leaderboard Modal */}
+          {gameState === 'leaderboard' && (
+            <LeaderboardModal
+              entries={leaderboard}
+              userName={userName}
+              currentScore={score}
+              onClose={handleCloseLeaderboard}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // ==================== RENDER ====================
+    ReactDOM.createRoot(document.getElementById('root')).render(<AnimalFaceoffGame />);
+  </script>
+</body>
+</html>
