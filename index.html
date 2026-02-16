@@ -752,9 +752,9 @@
             e("div", { className: "text-center mb-4 fade-in" },
               e("div", { className: "text-sm text-gray-400 uppercase tracking-widest font-semibold" }, "Who Would Win?")
             ),
-            currentMatchup ? e("div", { className: "relative flex items-center gap-3 sm:gap-4", key: animKey },
+            currentMatchup ? e("div", { className: "relative flex items-start gap-0", key: animKey },
               e(AnimalCard, { animal: currentMatchup.left, onSelect: handleAnimalSelect, side: "left", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.left.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.left.id }),
-              e("div", { className: "absolute left-1/2 -translate-x-1/2 z-10 vs-pop", style: { top: "64px" } },
+              e("div", { className: "flex-shrink-0 z-10 vs-pop -mx-5", style: { marginTop: "calc(2rem + 2rem)" } },
                 e("div", { className: "w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 border-2 border-orange-300/30" },
                   e("span", { className: "text-white font-black text-sm sm:text-base" }, "VS")
                 )
