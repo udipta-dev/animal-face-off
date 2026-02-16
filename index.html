@@ -327,7 +327,7 @@
 
     function AnimalCard(props) {
       var animal = props.animal, side = props.side, disabled = props.disabled, result = props.result, isWinner = props.isWinner, isLoser = props.isLoser;
-      var cardClass = "animal-card relative flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl ";
+      var cardClass = "animal-card relative flex flex-col items-center pt-8 sm:pt-10 p-4 sm:p-6 rounded-2xl ";
       var animClass = side === "left" ? "slide-in-left" : "slide-in-right";
       if (result) {
         if (isWinner) cardClass += "bg-gradient-to-b from-green-900/60 to-green-800/30 border-2 border-green-400/60 pulse-win ";
@@ -754,7 +754,7 @@
             ),
             currentMatchup ? e("div", { className: "relative flex items-center gap-3 sm:gap-4", key: animKey },
               e(AnimalCard, { animal: currentMatchup.left, onSelect: handleAnimalSelect, side: "left", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.left.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.left.id }),
-              e("div", { className: "absolute left-1/2 -translate-x-1/2 z-10 vs-pop", style: { top: "calc(50% - 50px)" } },
+              e("div", { className: "absolute left-1/2 -translate-x-1/2 z-10 vs-pop", style: { top: "64px" } },
                 e("div", { className: "w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 border-2 border-orange-300/30" },
                   e("span", { className: "text-white font-black text-sm sm:text-base" }, "VS")
                 )
