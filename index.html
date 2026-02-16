@@ -131,13 +131,13 @@
       { id: "polar_001", name: "Polar Bear", emoji: "\u2744\uFE0F", imageBase: "polar-bear", weightClass: "heavyweight",
         stats: { strength: 95, speed: 58, defense: 90, aggression: 82 } },
       { id: "gorilla_001", name: "Gorilla", emoji: "\uD83E\uDD8D", imageBase: "gorilla", weightClass: "heavyweight",
-        stats: { strength: 100, speed: 55, defense: 75, aggression: 70 } },
+        stats: { strength: 100, speed: 55, defense: 75, aggression: 75 } },
       { id: "croc_001", name: "Crocodile", emoji: "\uD83D\uDC0A", imageBase: "crocodile", weightClass: "heavyweight",
-        stats: { strength: 88, speed: 45, defense: 92, aggression: 85 } },
+        stats: { strength: 93, speed: 45, defense: 92, aggression: 90 } },
       { id: "moose_001", name: "Moose", emoji: "\uD83E\uDD8C", imageBase: "moose", weightClass: "heavyweight",
         stats: { strength: 82, speed: 65, defense: 68, aggression: 72 } },
       { id: "anaconda_001", name: "Anaconda", emoji: "\uD83D\uDC0D", imageBase: "anaconda", weightClass: "heavyweight",
-        stats: { strength: 78, speed: 40, defense: 70, aggression: 80 } },
+        stats: { strength: 88, speed: 54, defense: 78, aggression: 80 } },
       { id: "black_bear_001", name: "Black Bear", emoji: "\uD83D\uDC3B", imageBase: "black-bear", weightClass: "heavyweight",
         stats: { strength: 78, speed: 65, defense: 72, aggression: 68 } },
       { id: "gaur_001", name: "Gaur", emoji: "\uD83D\uDC02", imageBase: "gaur", weightClass: "heavyweight",
@@ -147,7 +147,7 @@
       { id: "jaguar_001", name: "Jaguar", emoji: "\uD83D\uDC06", imageBase: "jaguar", weightClass: "heavyweight",
         stats: { strength: 82, speed: 82, defense: 60, aggression: 88 } },
       { id: "cape_buffalo_001", name: "Cape Buffalo", emoji: "\uD83D\uDC03", imageBase: "cape-buffalo", weightClass: "heavyweight",
-        stats: { strength: 90, speed: 55, defense: 82, aggression: 92 } },
+        stats: { strength: 85, speed: 55, defense: 78, aggression: 92 } },
       { id: "komodo_001", name: "Komodo Dragon", emoji: "\uD83E\uDD8E", imageBase: "komodo-dragon", weightClass: "heavyweight",
         stats: { strength: 72, speed: 55, defense: 82, aggression: 90 } },
       { id: "cassowary_001", name: "Cassowary", emoji: "\uD83D\uDC26", imageBase: "cassowary", weightClass: "heavyweight",
@@ -157,7 +157,7 @@
       { id: "kangaroo_001", name: "Kangaroo", emoji: "\uD83E\uDD98", imageBase: "kangaroo", weightClass: "heavyweight",
         stats: { strength: 70, speed: 75, defense: 58, aggression: 82 } },
       { id: "leopard_seal_001", name: "Leopard Seal", emoji: "\uD83E\uDDAD", imageBase: "leopard-seal", weightClass: "heavyweight",
-        stats: { strength: 76, speed: 70, defense: 68, aggression: 86 } },
+        stats: { strength: 70, speed: 70, defense: 68, aggression: 82 } },
       { id: "walrus_001", name: "Walrus", emoji: "\uD83E\uDDAD", imageBase: "walrus", weightClass: "heavyweight",
         stats: { strength: 85, speed: 35, defense: 90, aggression: 65 } },
       { id: "ostrich_001", name: "Ostrich", emoji: "\uD83D\uDC26", imageBase: "ostrich", weightClass: "heavyweight",
@@ -199,8 +199,8 @@
     }
 
     function determineWinner(a1, a2) {
-      var s1 = Math.round(a1.fightScore * (0.9 + Math.random() * 0.2));
-      var s2 = Math.round(a2.fightScore * (0.9 + Math.random() * 0.2));
+      var s1 = Math.round(a1.fightScore * (0.95 + Math.random() * 0.1));
+      var s2 = Math.round(a2.fightScore * (0.95 + Math.random() * 0.1));
       return { winner: s1 > s2 ? a1 : a2, scores: { left: s1, right: s2 } };
     }
 
@@ -569,6 +569,7 @@
       var bsRef = useState(0), bestStreak = bsRef[0], setBestStreak = bsRef[1];
       var lsRef = useState("local"), leaderboardSource = lsRef[0], setLeaderboardSource = lsRef[1];
       var fsRef = useState(null), fightScores = fsRef[0], setFightScores = fsRef[1];
+      var siRef = useState(false), showInfo = siRef[0], setShowInfo = siRef[1];
       var prevGameStateRef = useRef("loading");
 
       // Initialize
@@ -764,10 +765,28 @@
             ) : null,
             streak >= 3 && gameState === "playing" ? e("div", { className: "text-center mt-4 fade-in" },
               e("span", { className: "text-orange-400 font-bold streak-fire text-sm" }, "\uD83D\uDD25 " + streak + " correct in a row!")
-            ) : null
+            ) : null,
+            // How scoring works - ? icon
+            e("div", { className: "text-center mt-3" },
+              e("button", { onClick: function() { setShowInfo(!showInfo); }, className: "text-gray-500 hover:text-gray-300 transition-colors inline-flex items-center gap-1 text-xs" },
+                e("span", { className: "w-5 h-5 rounded-full border border-gray-500 inline-flex items-center justify-center text-xs font-bold" }, "?"),
+                e("span", null, "How does scoring work?")
+              ),
+              showInfo ? e("div", { className: "mt-2 bg-gray-800/90 rounded-xl p-4 text-left text-xs text-gray-300 border border-gray-700 fade-in" },
+                e("p", { className: "font-bold text-orange-400 mb-2" }, "How each round works:"),
+                e("p", { className: "mb-1" }, "Every animal has 4 stats: Strength, Speed, Defense, and Aggression. These add up to a base power score."),
+                e("p", { className: "mb-1" }, "Each round, both animals get a small random boost or penalty (\u00B15%) to keep things exciting. So a slightly weaker animal can still pull off an upset!"),
+                e("p", { className: "mb-1" }, "You get 10 points for each correct pick. Land 5 in a row? Bonus 5 points!"),
+                e("p", { className: "text-gray-500 mt-2" }, "Tip: The stronger animal usually wins, but not always \u2014 that's what makes it fun!")
+              ) : null
+            )
           )
         ),
-        e("div", { className: "text-center py-3 text-gray-600 text-xs" }, "Heavyweight Division \u2022 Tournament Mode"),
+        e("div", { className: "text-center py-3 text-gray-500 text-xs" },
+          e("span", null, "Playing as "),
+          e("span", { className: "text-orange-400 font-semibold" }, userName),
+          e("span", { className: "text-gray-600" }, " \u2022 Heavyweight Division")
+        ),
         gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, onNext: handleNextRound }) : null
       );
     }
