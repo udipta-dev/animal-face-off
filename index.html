@@ -3,8 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Animal Faceoff</title>
+  <title>Animal Faceoff — Who Would Win?</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦁</text></svg>" />
+  <!-- Open Graph / Social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://udipta-dev.github.io/animal-face-off/" />
+  <meta property="og:title" content="Animal Faceoff — Who Would Win?" />
+  <meta property="og:description" content="Predict the winner of epic animal battles! 20 rounds, 20 heavyweight animals. Play the tournament and climb the global leaderboard." />
+  <meta property="og:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Animal Faceoff — Who Would Win?" />
+  <meta name="twitter:description" content="Predict the winner of epic animal battles! 20 rounds, 20 heavyweight animals." />
+  <meta name="twitter:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -579,6 +592,20 @@
       else if (pct >= 50) grade = { label: "GOOD", color: "text-blue-400", emoji: "\uD83D\uDC4D" };
       else grade = { label: "KEEP TRYING", color: "text-gray-400", emoji: "\uD83D\uDCAA" };
 
+      var copiedRef = useState(false), copied = copiedRef[0], setCopied = copiedRef[1];
+
+      function handleShare() {
+        var shareText = "\uD83E\uDD81\u2694\uFE0F I scored " + props.score + " on Animal Faceoff! (" + pct + "% accuracy, " + props.bestStreak + " best streak)\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+        if (navigator.share) {
+          navigator.share({ title: "Animal Faceoff", text: shareText }).catch(function() {});
+        } else {
+          navigator.clipboard.writeText(shareText).then(function() {
+            setCopied(true);
+            setTimeout(function() { setCopied(false); }, 2000);
+          }).catch(function() {});
+        }
+      }
+
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
           e("div", { className: "text-6xl mb-4" }, grade.emoji),
@@ -603,6 +630,10 @@
             )
           ),
           e("div", { className: "space-y-3" },
+            e("button", {
+              onClick: handleShare,
+              className: "w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-green-500/20"
+            }, copied ? "COPIED! \u2705" : "SHARE YOUR SCORE \uD83D\uDCE4"),
             e("button", {
               onClick: props.onPlayAgain,
               className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-orange-500/20"
