@@ -9,14 +9,14 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://udipta-dev.github.io/animal-face-off/" />
   <meta property="og:title" content="Animal Faceoff — Who Would Win?" />
-  <meta property="og:description" content="Predict the winner of epic animal battles! 20 rounds, 20 heavyweight animals. Play the tournament and climb the global leaderboard." />
+  <meta property="og:description" content="Predict the winner of epic animal battles! 40 animals, 2 weight classes, trump cards. Play the tournament and climb the global leaderboard." />
   <meta property="og:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Animal Faceoff — Who Would Win?" />
-  <meta name="twitter:description" content="Predict the winner of epic animal battles! 20 rounds, 20 heavyweight animals." />
+  <meta name="twitter:description" content="Predict the winner of epic animal battles! 40 animals, 2 weight classes, trump cards!" />
   <meta name="twitter:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -88,6 +88,13 @@
     .stat-bar-delay-2 { animation-delay: 0.2s; }
     .stat-bar-delay-3 { animation-delay: 0.3s; }
     .stat-bar-delay-4 { animation-delay: 0.4s; }
+    @keyframes trumpFlash {
+      0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+      40% { opacity: 1; transform: scale(1.15) rotate(2deg); }
+      70% { transform: scale(0.95) rotate(-1deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .trump-flash { animation: trumpFlash 0.6s ease-out forwards; }
     .animal-card {
       transition: transform 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
@@ -188,51 +195,146 @@
     }
 
     // ==================== ANIMAL DATABASE ====================
-    var animals = [
+    var WEIGHT_CLASSES = {
+      heavyweight: { label: "Heavyweight", emoji: "\uD83C\uDFCB\uFE0F", desc: "The biggest, baddest animals on the planet" },
+      middleweight: { label: "Middleweight", emoji: "\uD83D\uDC3A", desc: "Fast, fierce, and deadly mid-size predators" }
+    };
+
+    var allAnimals = [
+      // ---- HEAVYWEIGHT ----
       { id: "lion_001", name: "Lion", emoji: "\uD83E\uDD81", imageBase: "lion", weightClass: "heavyweight",
-        stats: { strength: 85, speed: 75, defense: 70, aggression: 90 } },
+        stats: { strength: 85, speed: 75, defense: 70, aggression: 90 },
+        trump: { name: "Pack Hunter", bonus: 15, desc: "Calls the pride" } },
       { id: "tiger_001", name: "Tiger", emoji: "\uD83D\uDC2F", imageBase: "tiger", weightClass: "heavyweight",
-        stats: { strength: 90, speed: 80, defense: 65, aggression: 85 } },
+        stats: { strength: 90, speed: 80, defense: 65, aggression: 85 },
+        trump: { name: "Ambush Strike", bonus: 18, desc: "Strikes from the shadows" } },
       { id: "grizzly_001", name: "Grizzly Bear", emoji: "\uD83D\uDC3B", imageBase: "grizzly-bear", weightClass: "heavyweight",
-        stats: { strength: 95, speed: 60, defense: 85, aggression: 80 } },
+        stats: { strength: 95, speed: 60, defense: 85, aggression: 80 },
+        trump: { name: "Bear Rage", bonus: 17, desc: "Goes full berserker" } },
       { id: "polar_001", name: "Polar Bear", emoji: "\u2744\uFE0F", imageBase: "polar-bear", weightClass: "heavyweight",
-        stats: { strength: 95, speed: 58, defense: 90, aggression: 82 } },
+        stats: { strength: 95, speed: 58, defense: 90, aggression: 82 },
+        trump: { name: "Arctic Fury", bonus: 18, desc: "Unleashes cold-blooded rage" } },
       { id: "gorilla_001", name: "Gorilla", emoji: "\uD83E\uDD8D", imageBase: "gorilla", weightClass: "heavyweight",
-        stats: { strength: 100, speed: 55, defense: 75, aggression: 75 } },
+        stats: { strength: 100, speed: 55, defense: 75, aggression: 75 },
+        trump: { name: "Chest Pound", bonus: 13, desc: "Intimidation overload" } },
       { id: "croc_001", name: "Crocodile", emoji: "\uD83D\uDC0A", imageBase: "crocodile", weightClass: "heavyweight",
-        stats: { strength: 93, speed: 45, defense: 92, aggression: 90 } },
+        stats: { strength: 93, speed: 45, defense: 92, aggression: 90 },
+        trump: { name: "Death Roll", bonus: 18, desc: "Signature killing move" } },
       { id: "moose_001", name: "Moose", emoji: "\uD83E\uDD8C", imageBase: "moose", weightClass: "heavyweight",
-        stats: { strength: 82, speed: 65, defense: 68, aggression: 72 } },
+        stats: { strength: 82, speed: 65, defense: 68, aggression: 72 },
+        trump: { name: "Antler Smash", bonus: 14, desc: "Swings massive rack" } },
       { id: "anaconda_001", name: "Anaconda", emoji: "\uD83D\uDC0D", imageBase: "anaconda", weightClass: "heavyweight",
-        stats: { strength: 88, speed: 54, defense: 78, aggression: 80 } },
+        stats: { strength: 88, speed: 54, defense: 78, aggression: 80 },
+        trump: { name: "Constrict", bonus: 16, desc: "Squeezes the life out" } },
       { id: "black_bear_001", name: "Black Bear", emoji: "\uD83D\uDC3B", imageBase: "black-bear", weightClass: "heavyweight",
-        stats: { strength: 78, speed: 65, defense: 72, aggression: 68 } },
+        stats: { strength: 78, speed: 65, defense: 72, aggression: 68 },
+        trump: { name: "Tree Ambush", bonus: 13, desc: "Attacks from above" } },
       { id: "gaur_001", name: "Gaur", emoji: "\uD83D\uDC02", imageBase: "gaur", weightClass: "heavyweight",
-        stats: { strength: 92, speed: 58, defense: 70, aggression: 88 } },
+        stats: { strength: 92, speed: 58, defense: 70, aggression: 88 },
+        trump: { name: "Iron Horns", bonus: 15, desc: "Gores with massive horns" } },
       { id: "bison_001", name: "American Bison", emoji: "\uD83E\uDDAC", imageBase: "american-bison", weightClass: "heavyweight",
-        stats: { strength: 90, speed: 58, defense: 80, aggression: 78 } },
+        stats: { strength: 90, speed: 58, defense: 80, aggression: 78 },
+        trump: { name: "Bulldoze", bonus: 14, desc: "2000lbs of momentum" } },
       { id: "jaguar_001", name: "Jaguar", emoji: "\uD83D\uDC06", imageBase: "jaguar", weightClass: "heavyweight",
-        stats: { strength: 82, speed: 82, defense: 60, aggression: 88 } },
+        stats: { strength: 82, speed: 82, defense: 60, aggression: 88 },
+        trump: { name: "Skull Crusher", bonus: 17, desc: "Bites through bone" } },
       { id: "cape_buffalo_001", name: "Cape Buffalo", emoji: "\uD83D\uDC03", imageBase: "cape-buffalo", weightClass: "heavyweight",
-        stats: { strength: 85, speed: 55, defense: 78, aggression: 92 } },
+        stats: { strength: 85, speed: 55, defense: 78, aggression: 92 },
+        trump: { name: "Stampede", bonus: 16, desc: "Charges with full force" } },
       { id: "komodo_001", name: "Komodo Dragon", emoji: "\uD83E\uDD8E", imageBase: "komodo-dragon", weightClass: "heavyweight",
-        stats: { strength: 72, speed: 55, defense: 82, aggression: 90 } },
+        stats: { strength: 72, speed: 55, defense: 82, aggression: 90 },
+        trump: { name: "Venom Bite", bonus: 17, desc: "Toxic saliva kicks in" } },
       { id: "cassowary_001", name: "Cassowary", emoji: "\uD83D\uDC26", imageBase: "cassowary", weightClass: "heavyweight",
-        stats: { strength: 62, speed: 75, defense: 52, aggression: 91 } },
+        stats: { strength: 62, speed: 75, defense: 52, aggression: 91 },
+        trump: { name: "Dagger Kick", bonus: 15, desc: "Razor claw slash" } },
       { id: "wildebeest_001", name: "Wildebeest", emoji: "\uD83D\uDC03", imageBase: "wildebeest", weightClass: "heavyweight",
-        stats: { strength: 75, speed: 72, defense: 60, aggression: 70 } },
+        stats: { strength: 75, speed: 72, defense: 60, aggression: 70 },
+        trump: { name: "Herd Rush", bonus: 12, desc: "Strength in numbers" } },
       { id: "kangaroo_001", name: "Kangaroo", emoji: "\uD83E\uDD98", imageBase: "kangaroo", weightClass: "heavyweight",
-        stats: { strength: 70, speed: 75, defense: 58, aggression: 82 } },
+        stats: { strength: 70, speed: 75, defense: 58, aggression: 82 },
+        trump: { name: "Power Kick", bonus: 13, desc: "Devastating drop kick" } },
       { id: "leopard_seal_001", name: "Leopard Seal", emoji: "\uD83E\uDDAD", imageBase: "leopard-seal", weightClass: "heavyweight",
-        stats: { strength: 70, speed: 70, defense: 68, aggression: 82 } },
+        stats: { strength: 70, speed: 70, defense: 68, aggression: 82 },
+        trump: { name: "Deep Drag", bonus: 14, desc: "Drags prey underwater" } },
       { id: "walrus_001", name: "Walrus", emoji: "\uD83E\uDDAD", imageBase: "walrus", weightClass: "heavyweight",
-        stats: { strength: 85, speed: 35, defense: 90, aggression: 65 } },
+        stats: { strength: 85, speed: 35, defense: 90, aggression: 65 },
+        trump: { name: "Tusk Charge", bonus: 14, desc: "3000lbs behind tusks" } },
       { id: "ostrich_001", name: "Ostrich", emoji: "\uD83D\uDC26", imageBase: "ostrich", weightClass: "heavyweight",
-        stats: { strength: 60, speed: 90, defense: 50, aggression: 68 } },
+        stats: { strength: 60, speed: 90, defense: 50, aggression: 68 },
+        trump: { name: "Turbo Sprint", bonus: 12, desc: "Fastest legs alive" } },
+
+      // ---- MIDDLEWEIGHT ----
+      { id: "cougar_001", name: "Cougar", emoji: "\uD83D\uDC06", imageBase: "cougar", weightClass: "middleweight",
+        stats: { strength: 78, speed: 82, defense: 62, aggression: 85 },
+        trump: { name: "Silent Pounce", bonus: 17, desc: "Leaps from nowhere" } },
+      { id: "snow_leopard_001", name: "Snow Leopard", emoji: "\uD83D\uDC06", imageBase: "snow-leopard", weightClass: "middleweight",
+        stats: { strength: 75, speed: 85, defense: 60, aggression: 85 },
+        trump: { name: "Ghost Strike", bonus: 17, desc: "Phantom of the mountains" } },
+      { id: "grey_wolf_001", name: "Grey Wolf", emoji: "\uD83D\uDC3A", imageBase: "grey-wolf", weightClass: "middleweight",
+        stats: { strength: 72, speed: 78, defense: 65, aggression: 88 },
+        trump: { name: "Pack Call", bonus: 16, desc: "The pack arrives" } },
+      { id: "wolverine_001", name: "Wolverine", emoji: "\uD83E\uDDA1", imageBase: "wolverine", weightClass: "middleweight",
+        stats: { strength: 72, speed: 65, defense: 70, aggression: 95 },
+        trump: { name: "Berserker", bonus: 18, desc: "Fights anything, fears nothing" } },
+      { id: "spotted_hyena_001", name: "Spotted Hyena", emoji: "\uD83D\uDC3A", imageBase: "spotted-hyena", weightClass: "middleweight",
+        stats: { strength: 78, speed: 70, defense: 68, aggression: 85 },
+        trump: { name: "Bone Crusher", bonus: 16, desc: "Jaws snap through bone" } },
+      { id: "wild_boar_001", name: "Wild Boar", emoji: "\uD83D\uDC17", imageBase: "wild-boar", weightClass: "middleweight",
+        stats: { strength: 68, speed: 58, defense: 75, aggression: 92 },
+        trump: { name: "Tusk Gore", bonus: 15, desc: "Charges tusks-first" } },
+      { id: "african_wild_dog_001", name: "African Wild Dog", emoji: "\uD83D\uDC15", imageBase: "african-wild-dog", weightClass: "middleweight",
+        stats: { strength: 58, speed: 82, defense: 50, aggression: 90 },
+        trump: { name: "Relay Hunt", bonus: 15, desc: "Takes turns chasing prey down" } },
+      { id: "warthog_001", name: "Warthog", emoji: "\uD83D\uDC17", imageBase: "warthog", weightClass: "middleweight",
+        stats: { strength: 62, speed: 65, defense: 72, aggression: 80 },
+        trump: { name: "Burrow Charge", bonus: 13, desc: "Explosive burst from cover" } },
+      { id: "cheetah_001", name: "Cheetah", emoji: "\uD83D\uDC06", imageBase: "cheetah", weightClass: "middleweight",
+        stats: { strength: 55, speed: 100, defense: 42, aggression: 80 },
+        trump: { name: "Top Speed", bonus: 16, desc: "Hits 70mph" } },
+      { id: "red_kangaroo_001", name: "Red Kangaroo", emoji: "\uD83E\uDD98", imageBase: "red-kangaroo", weightClass: "middleweight",
+        stats: { strength: 70, speed: 72, defense: 58, aggression: 75 },
+        trump: { name: "Boxing Combo", bonus: 14, desc: "Rapid-fire punches" } },
+      { id: "clouded_leopard_001", name: "Clouded Leopard", emoji: "\uD83D\uDC06", imageBase: "clouded-leopard", weightClass: "middleweight",
+        stats: { strength: 62, speed: 78, defense: 52, aggression: 82 },
+        trump: { name: "Canine Strike", bonus: 14, desc: "Longest fangs for its size" } },
+      { id: "baboon_001", name: "Baboon", emoji: "\uD83D\uDC12", imageBase: "baboon", weightClass: "middleweight",
+        stats: { strength: 60, speed: 70, defense: 55, aggression: 88 },
+        trump: { name: "Troop Frenzy", bonus: 15, desc: "Calls in the whole troop" } },
+      { id: "caiman_001", name: "Caiman", emoji: "\uD83D\uDC0A", imageBase: "caiman", weightClass: "middleweight",
+        stats: { strength: 72, speed: 42, defense: 80, aggression: 78 },
+        trump: { name: "Snap Lock", bonus: 14, desc: "Jaws clamp shut" } },
+      { id: "king_cobra_001", name: "King Cobra", emoji: "\uD83D\uDC0D", imageBase: "king-cobra", weightClass: "middleweight",
+        stats: { strength: 48, speed: 88, defense: 42, aggression: 90 },
+        trump: { name: "Venom Strike", bonus: 18, desc: "One bite, lights out" } },
+      { id: "dhole_001", name: "Dhole", emoji: "\uD83D\uDC15", imageBase: "dhole", weightClass: "middleweight",
+        stats: { strength: 55, speed: 78, defense: 50, aggression: 85 },
+        trump: { name: "Swarm Attack", bonus: 15, desc: "Attacks in a pack" } },
+      { id: "tasmanian_devil_001", name: "Tasmanian Devil", emoji: "\uD83D\uDE08", imageBase: "tasmanian-devil", weightClass: "middleweight",
+        stats: { strength: 55, speed: 60, defense: 58, aggression: 95 },
+        trump: { name: "Devil Scream", bonus: 16, desc: "Blood-curdling screech + bite" } },
+      { id: "giant_anteater_001", name: "Giant Anteater", emoji: "\uD83D\uDC3E", imageBase: "giant-anteater", weightClass: "middleweight",
+        stats: { strength: 65, speed: 55, defense: 70, aggression: 72 },
+        trump: { name: "Claw Slash", bonus: 14, desc: "4-inch razor claws" } },
+      { id: "ocelot_001", name: "Ocelot", emoji: "\uD83D\uDC31", imageBase: "ocelot", weightClass: "middleweight",
+        stats: { strength: 55, speed: 82, defense: 48, aggression: 76 },
+        trump: { name: "Night Ambush", bonus: 13, desc: "Strikes in darkness" } },
+      { id: "coyote_001", name: "Coyote", emoji: "\uD83D\uDC3A", imageBase: "coyote", weightClass: "middleweight",
+        stats: { strength: 52, speed: 80, defense: 48, aggression: 78 },
+        trump: { name: "Scavenger Trick", bonus: 13, desc: "Outsmart and outlast" } },
+      { id: "emu_001", name: "Emu", emoji: "\uD83D\uDC26", imageBase: "emu", weightClass: "middleweight",
+        stats: { strength: 50, speed: 85, defense: 45, aggression: 75 },
+        trump: { name: "War Charge", bonus: 12, desc: "Won a war against Australia" } },
     ];
-    animals.forEach(function(a) {
+    allAnimals.forEach(function(a) {
       a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
     });
+
+    function getAnimalsByClass(wc) {
+      return allAnimals.filter(function(a) { return a.weightClass === wc; });
+    }
+
+    // Default for backward compat
+    var animals = getAnimalsByClass("heavyweight");
 
     // ==================== NAME GENERATOR ====================
     var NAME_ADJECTIVES = [
@@ -277,11 +379,12 @@
       return a;
     }
 
-    function generateTournamentMatchups() {
+    function generateTournamentMatchups(animalList) {
+      var list = animalList || animals;
       var pairings = [];
-      for (var i = 0; i < animals.length; i++) {
-        for (var j = i + 1; j < animals.length; j++) {
-          pairings.push({ left: animals[i], right: animals[j] });
+      for (var i = 0; i < list.length; i++) {
+        for (var j = i + 1; j < list.length; j++) {
+          pairings.push({ left: list[i], right: list[j] });
         }
       }
       var shuffled = shuffleArray(pairings);
@@ -298,10 +401,26 @@
       });
     }
 
+    var TRUMP_CHANCE = 0.2; // 20% chance per round
+
     function determineWinner(a1, a2) {
       var s1 = Math.round(a1.fightScore * (0.95 + Math.random() * 0.1));
       var s2 = Math.round(a2.fightScore * (0.95 + Math.random() * 0.1));
-      return { winner: s1 > s2 ? a1 : a2, scores: { left: s1, right: s2 } };
+      var trumpCard = null;
+      if (Math.random() < TRUMP_CHANCE) {
+        // One animal triggers their trump card
+        if (Math.random() < 0.5 && a1.trump) {
+          s1 += a1.trump.bonus;
+          trumpCard = { animal: a1, trump: a1.trump, side: "left" };
+        } else if (a2.trump) {
+          s2 += a2.trump.bonus;
+          trumpCard = { animal: a2, trump: a2.trump, side: "right" };
+        } else if (a1.trump) {
+          s1 += a1.trump.bonus;
+          trumpCard = { animal: a1, trump: a1.trump, side: "left" };
+        }
+      }
+      return { winner: s1 > s2 ? a1 : a2, scores: { left: s1, right: s2 }, trumpCard: trumpCard };
     }
 
     // ==================== STORAGE ====================
@@ -455,13 +574,21 @@
       var isFinalRound = props.round >= TOURNAMENT_ROUNDS;
       var fs = props.fightScores || { left: left.fightScore, right: right.fightScore };
       var leftWon = props.winner.id === left.id;
+      var trump = props.trumpCard;
       return e("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in" },
         e("div", { className: "bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[85vh] overflow-y-auto" },
           e("div", { className: "p-5 text-center rounded-t-2xl " + (isCorrect ? "bg-gradient-to-b from-green-900/50 to-transparent" : "bg-gradient-to-b from-red-900/50 to-transparent") },
             e("div", { className: "text-4xl mb-2" }, isCorrect ? "\uD83C\uDF89" : "\uD83D\uDE14"),
             e("div", { className: "text-xl font-black " + (isCorrect ? "text-green-400" : "text-red-400") }, isCorrect ? "CORRECT!" : "WRONG!"),
             e("div", { className: "text-gray-400 text-sm mt-1" }, props.winner.name + " wins this round!"),
-            isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + " streak! +" + props.points + " pts") : null
+            isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + " streak! +" + props.points + " pts") : null,
+            trump ? e("div", { className: "mt-3 trump-flash inline-block" },
+              e("div", { className: "bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-400/40 rounded-xl px-4 py-2" },
+                e("div", { className: "text-purple-300 text-xs font-bold uppercase tracking-wider" }, "\u26A1 TRUMP CARD ACTIVATED!"),
+                e("div", { className: "text-white font-black text-sm mt-1" }, trump.animal.name + " \u2014 " + trump.trump.name),
+                e("div", { className: "text-purple-300/70 text-xs mt-0.5" }, trump.trump.desc + " (+" + trump.trump.bonus + " pts)")
+              )
+            ) : null
           ),
           e("div", { className: "px-5 py-4" },
             e("div", { className: "flex items-center justify-evenly mb-4" },
@@ -611,6 +738,45 @@
       );
     }
 
+    function ClassSelect(props) {
+      var classes = Object.keys(WEIGHT_CLASSES);
+      return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
+        e("div", { className: "text-center fade-in-up w-full max-w-sm" },
+          e("div", { className: "text-6xl mb-4" }, "\u2694\uFE0F"),
+          e("h1", { className: "text-3xl font-black mb-2" },
+            e("span", { className: "text-orange-400" }, "CHOOSE YOUR"),
+            e("span", { className: "text-white" }, " DIVISION")
+          ),
+          e("p", { className: "text-gray-400 mb-6" }, "Each division has its own set of animals"),
+          e("div", { className: "space-y-3" },
+            classes.map(function(key) {
+              var wc = WEIGHT_CLASSES[key];
+              return e("button", {
+                key: key,
+                onClick: function() { props.onSelect(key); },
+                className: "w-full p-4 bg-gray-800/80 border-2 border-gray-600/30 hover:border-orange-400/50 rounded-xl active:scale-95 transition-all text-left"
+              },
+                e("div", { className: "flex items-center gap-3" },
+                  e("span", { className: "text-3xl" }, wc.emoji),
+                  e("div", null,
+                    e("div", { className: "font-bold text-lg text-white" }, wc.label),
+                    e("div", { className: "text-xs text-gray-400" }, wc.desc),
+                    e("div", { className: "text-xs text-orange-400/70 mt-1" }, getAnimalsByClass(key).length + " animals")
+                  )
+                )
+              );
+            })
+          ),
+          e("div", { className: "mt-6" },
+            e("button", {
+              onClick: props.onLeaderboard,
+              className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
+            }, "VIEW LEADERBOARD \uD83C\uDFC6")
+          )
+        )
+      );
+    }
+
     function TournamentReady(props) {
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
@@ -623,7 +789,11 @@
             "Welcome, " + props.playerName + "! ",
             e("button", { onClick: props.onChangeName, className: "text-orange-400 underline text-sm" }, "Not you?")
           ),
-          e("p", { className: "text-gray-500 text-sm mb-8" }, TOURNAMENT_ROUNDS + " rounds \u2022 No repeated matchups \u2022 Best score wins"),
+          props.weightClass && WEIGHT_CLASSES[props.weightClass] ? e("div", { className: "inline-block mb-3 px-4 py-1 rounded-full bg-orange-500/20 text-orange-400 text-sm font-bold" },
+            WEIGHT_CLASSES[props.weightClass].emoji + " " + WEIGHT_CLASSES[props.weightClass].label + " Division"
+          ) : null,
+          e("p", { className: "text-gray-500 text-sm mb-4" }, TOURNAMENT_ROUNDS + " rounds \u2022 No repeated matchups \u2022 Trump cards enabled!"),
+          e("button", { onClick: props.onChangeClass, className: "text-gray-500 hover:text-orange-400 text-xs mb-6 underline transition-colors" }, "Change division"),
           e("div", { className: "space-y-3" },
             e("button", {
               onClick: props.onStart,
@@ -656,7 +826,8 @@
       var copiedRef = useState(false), copied = copiedRef[0], setCopied = copiedRef[1];
 
       function handleShare() {
-        var shareText = "\uD83E\uDD81\u2694\uFE0F I scored " + props.score + " on Animal Faceoff! (" + pct + "% accuracy" + (timeStr ? ", " + timeStr : "") + ")\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+        var divLabel = props.weightClass && WEIGHT_CLASSES[props.weightClass] ? " (" + WEIGHT_CLASSES[props.weightClass].label + ")" : "";
+        var shareText = "\uD83E\uDD81\u2694\uFE0F I scored " + props.score + " on Animal Faceoff" + divLabel + "! (" + pct + "% accuracy" + (timeStr ? ", " + timeStr : "") + ")\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
         if (navigator.share) {
           navigator.share({ title: "Animal Faceoff", text: shareText }).catch(function() {});
         } else {
@@ -734,6 +905,8 @@
       var bsRef = useState(0), bestStreak = bsRef[0], setBestStreak = bsRef[1];
       var lsRef = useState("local"), leaderboardSource = lsRef[0], setLeaderboardSource = lsRef[1];
       var fsRef = useState(null), fightScores = fsRef[0], setFightScores = fsRef[1];
+      var tcRef = useState(null), activeTrump = tcRef[0], setActiveTrump = tcRef[1];
+      var wcRef = useState(null), weightClass = wcRef[0], setWeightClass = wcRef[1];
       var siRef = useState(false), showInfo = siRef[0], setShowInfo = siRef[1];
       var prRef = useState(null), playerRank = prRef[0], setPlayerRank = prRef[1];
       var peRef = useState(null), playerEntry = peRef[0], setPlayerEntry = peRef[1];
@@ -746,6 +919,7 @@
         var session = loadSession();
         if (session && session.name) {
           setUserName(session.name);
+          if (session.weightClass) setWeightClass(session.weightClass);
           if (session.tournamentMatchups && session.tournamentMatchups.length > 0 && session.gameState === "playing") {
             setTournamentMatchups(session.tournamentMatchups);
             setTournamentId(session.tournamentId);
@@ -754,11 +928,12 @@
             setStreak(session.streak || 0);
             setRoundsCorrect(session.roundsCorrect || 0);
             setBestStreak(session.bestStreak || 0);
+            setWeightClass(session.weightClass || "heavyweight");
             setCurrentMatchup(session.tournamentMatchups[(session.round || 1) - 1]);
             setAnimKey(function(k) { return k + 1; });
             setGameState("playing");
           } else {
-            setGameState("tournament_ready");
+            setGameState("class_select");
           }
         } else {
           setGameState("name_entry");
@@ -773,7 +948,7 @@
             name: userName, score: score, round: round, streak: streak,
             roundsCorrect: roundsCorrect, bestStreak: bestStreak,
             tournamentMatchups: tournamentMatchups, tournamentId: tournamentId,
-            gameState: "playing"
+            weightClass: weightClass, gameState: "playing"
           });
         }
       }, [score, round, streak, userName, roundsCorrect, bestStreak, tournamentMatchups, tournamentId, gameState]);
@@ -781,11 +956,18 @@
       function handleNameSubmit(name) {
         setUserName(name);
         saveSession({ name: name });
+        setGameState("class_select");
+      }
+
+      function handleClassSelect(wc) {
+        setWeightClass(wc);
+        saveSession({ name: userName, weightClass: wc });
         setGameState("tournament_ready");
       }
 
       function handleStartTournament() {
-        var matchups = generateTournamentMatchups();
+        var classAnimals = weightClass ? getAnimalsByClass(weightClass) : animals;
+        var matchups = generateTournamentMatchups(classAnimals);
         var tid = generateUUID();
         setTournamentMatchups(matchups);
         setTournamentId(tid);
@@ -812,6 +994,7 @@
         var result = determineWinner(currentMatchup.left, currentMatchup.right);
         setWinner(result.winner);
         setFightScores(result.scores);
+        setActiveTrump(result.trumpCard);
         var isCorrect = animal.id === result.winner.id;
         var newStreak = isCorrect ? streak + 1 : 0;
         var streakBonus = isCorrect && newStreak > 0 && newStreak % 5 === 0 ? 5 : 0;
@@ -854,7 +1037,7 @@
 
       function handlePlayAgain() {
         saveSession({ name: userName });
-        setGameState("tournament_ready");
+        setGameState("class_select");
       }
 
       function handleShowLeaderboard() {
@@ -888,8 +1071,10 @@
           setGameState("playing");
         } else if (prev === "tournament_end") {
           setGameState("tournament_end");
-        } else {
+        } else if (prev === "tournament_ready") {
           setGameState("tournament_ready");
+        } else {
+          setGameState("class_select");
         }
       }
 
@@ -903,19 +1088,28 @@
       // Name entry
       if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit });
 
+      // Class select
+      if (gameState === "class_select") {
+        return e(ClassSelect, { onSelect: handleClassSelect, onLeaderboard: handleShowLeaderboard });
+      }
+
       // Tournament ready
       if (gameState === "tournament_ready") {
-        return e("div", null,
-          e(TournamentReady, { playerName: userName, onStart: handleStartTournament, onLeaderboard: handleShowLeaderboard, onChangeName: function() { setUserName(""); saveSession({}); setGameState("name_entry"); } }),
-          gameState === "leaderboard" ? e(LeaderboardModal, { entries: leaderboard, userName: userName, source: leaderboardSource, playerRank: playerRank, playerEntry: playerEntry, onClose: handleCloseLeaderboard }) : null
-        );
+        return e(TournamentReady, {
+          playerName: userName,
+          weightClass: weightClass,
+          onStart: handleStartTournament,
+          onLeaderboard: handleShowLeaderboard,
+          onChangeName: function() { setUserName(""); saveSession({}); setGameState("name_entry"); },
+          onChangeClass: function() { setGameState("class_select"); }
+        });
       }
 
       // Tournament end
       if (gameState === "tournament_end") {
         return e(TournamentEnd, {
           score: score, roundsCorrect: roundsCorrect, bestStreak: bestStreak,
-          timeSeconds: tournamentTime,
+          timeSeconds: tournamentTime, weightClass: weightClass,
           onPlayAgain: handlePlayAgain, onLeaderboard: handleShowLeaderboard
         });
       }
@@ -958,13 +1152,15 @@
                 e("p", { className: "font-bold text-orange-400 mb-2" }, "How each round works:"),
                 e("p", { className: "mb-1" }, "Every animal has 4 stats: Strength, Speed, Defense, and Aggression. These add up to a base power score."),
                 e("p", { className: "mb-1" }, "Each round, both animals get a small random boost or penalty (\u00B15%) to keep things exciting. So a slightly weaker animal can still pull off an upset!"),
+                e("p", { className: "mb-1" }, "\u26A1 Trump Cards: Each animal has a special ability with a 20% chance of activating per round. When triggered, it gives a bonus point boost!"),
                 e("p", { className: "mb-1" }, "You get 10 points for each correct pick. Land 5 in a row? Bonus 5 points!"),
-                e("p", { className: "text-gray-500 mt-2" }, "Tip: The stronger animal usually wins, but not always \u2014 that's what makes it fun!")
+                e("p", { className: "text-gray-500 mt-2" }, "Tip: The stronger animal usually wins, but trump cards can flip anything!")
               ) : null
             )
           )
         ),
         e("div", { className: "text-center py-3 text-gray-500 text-xs" },
+          weightClass && WEIGHT_CLASSES[weightClass] ? e("span", { className: "text-gray-600" }, WEIGHT_CLASSES[weightClass].emoji + " " + WEIGHT_CLASSES[weightClass].label + " \u2022 ") : null,
           e("span", null, "Playing as "),
           e("button", {
             onClick: function() { setUserName(""); saveSession({}); setGameState("name_entry"); },
@@ -972,7 +1168,7 @@
           }, userName),
           e("span", { className: "text-gray-600" }, " \u2022 tap name to change")
         ),
-        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, onNext: handleNextRound }) : null
+        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, trumpCard: activeTrump, onNext: handleNextRound }) : null
       );
     }
 
