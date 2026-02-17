@@ -883,8 +883,11 @@
         ),
         e("div", { className: "text-center py-3 text-gray-500 text-xs" },
           e("span", null, "Playing as "),
-          e("span", { className: "text-orange-400 font-semibold" }, userName),
-          e("span", { className: "text-gray-600" }, " \u2022 Heavyweight Division")
+          e("button", {
+            onClick: function() { setUserName(""); saveSession({}); setGameState("name_entry"); },
+            className: "text-orange-400 font-semibold underline decoration-dotted underline-offset-2 hover:text-orange-300 transition-colors"
+          }, userName),
+          e("span", { className: "text-gray-600" }, " \u2022 tap name to change")
         ),
         gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, onNext: handleNextRound }) : null
       );
