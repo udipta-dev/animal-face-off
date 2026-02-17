@@ -583,7 +583,7 @@
             e("div", { className: "text-gray-400 text-sm mt-1" }, props.winner.name + " wins this round!"),
             isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + " streak! +" + props.points + " pts") : null,
             trump ? e("div", { className: "mt-2 trump-flash inline-block bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-400/40 rounded-full px-4 py-1.5" },
-              e("span", { className: "text-purple-300 text-xs font-bold" }, "\u26A1 " + trump.animal.name + " \u2014 " + trump.trump.name + " "),
+              e("span", { className: "text-purple-300 text-xs font-bold" }, "\u26A1 Special Trait - " + trump.animal.name + " \u2014 " + trump.trump.name + " "),
               e("span", { className: "text-purple-400/70 text-xs" }, "(+" + trump.trump.bonus + ")")
             ) : null
           ),
