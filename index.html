@@ -102,10 +102,61 @@
       }
     } catch(ex) { console.warn('Supabase init failed:', ex); }
 
+    // ==================== NAME GENERATOR ====================
+    var NAME_ADJECTIVES = [
+      "Swift", "Fierce", "Shadow", "Thunder", "Iron", "Silent", "Blazing", "Frost",
+      "Storm", "Savage", "Golden", "Mystic", "Dark", "Brave", "Wild", "Mighty",
+      "Rapid", "Phantom", "Steel", "Noble"
+    ];
+    var NAME_ANIMALS = animals.map(function(a) { return a.name.replace(/ /g, ""); });
+
+    function generateRandomName() {
+      var adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
+      var anm = NAME_ANIMALS[Math.floor(Math.random() * NAME_ANIMALS.length)];
+      var num = Math.floor(Math.random() * 90) + 10;
+      return adj + anm + num;
+    }
+
+    function checkNameAvailable(name) {
+      if (!sb) return Promise.resolve(true);
+      return sb.from('leaderboard').select('player_name').eq('player_name', name).limit(1)
+        .then(function(r) {
+          if (r.error) return true;
+          return r.data.length === 0;
+        })
+        .catch(function() { return true; });
+    }
+
+    function generateUniqueName() {
+      var name = generateRandomName();
+      return checkNameAvailable(name).then(function(available) {
+        if (available) return name;
+        return generateUniqueName();
+      });
+    }
+
     function submitScoreToSupabase(entry) {
       if (!sb) return Promise.resolve(null);
-      return sb.from('leaderboard').insert([entry])
-        .then(function(r) { if (r.error) console.warn('Supabase insert error:', r.error.message); return r; })
+      // First check if player already has an entry
+      return sb.from('leaderboard').select('id, score').eq('player_name', entry.player_name).limit(1)
+        .then(function(r) {
+          if (r.error || !r.data || r.data.length === 0) {
+            // No existing entry — insert
+            return sb.from('leaderboard').insert([entry]);
+          }
+          var existing = r.data[0];
+          if (entry.score > existing.score) {
+            // New score is higher — update
+            return sb.from('leaderboard').update({
+              score: entry.score, streak: entry.streak,
+              rounds_correct: entry.rounds_correct, tournament_id: entry.tournament_id,
+              created_at: new Date().toISOString()
+            }).eq('id', existing.id);
+          }
+          // Existing score is higher — keep it
+          return Promise.resolve({ data: null, error: null });
+        })
+        .then(function(r) { if (r && r.error) console.warn('Supabase upsert error:', r.error.message); return r; })
         .catch(function(err) { console.warn('Supabase submit failed:', err); return null; });
     }
 
@@ -442,13 +493,24 @@
 
     function NameEntry(props) {
       var ref = useState(""), name = ref[0], setName = ref[1];
-      var inputRef = useRef(null);
-      useEffect(function() { setTimeout(function() { if (inputRef.current) inputRef.current.focus(); }, 300); }, []);
-      function handleSubmit(ev) {
-        ev.preventDefault();
-        var trimmed = name.trim();
-        if (trimmed.length >= 1 && trimmed.length <= 20) props.onSubmit(trimmed);
+      var ldRef = useState(true), loading = ldRef[0], setLoading = ldRef[1];
+      var rlRef = useState(false), rolling = rlRef[0], setRolling = rlRef[1];
+
+      function genName() {
+        setRolling(true);
+        generateUniqueName().then(function(n) {
+          setName(n);
+          setLoading(false);
+          setRolling(false);
+        });
       }
+
+      useEffect(function() { genName(); }, []);
+
+      function handleAccept() {
+        if (name && !loading && !rolling) props.onSubmit(name);
+      }
+
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
           e("div", { className: "text-6xl mb-4" }, "\uD83E\uDD81"),
@@ -456,19 +518,24 @@
             e("span", { className: "text-orange-400" }, "ANIMAL"),
             e("span", { className: "text-white" }, " FACEOFF")
           ),
-          e("p", { className: "text-gray-400 mb-8" }, "Predict the winner of epic animal battles!"),
-          e("form", { onSubmit: handleSubmit, className: "space-y-4" },
-            e("div", null,
-              e("label", { className: "text-sm text-gray-400 block mb-2" }, "What's your name?"),
-              e("input", {
-                ref: inputRef, type: "text", value: name,
-                onChange: function(ev) { setName(ev.target.value); },
-                placeholder: "Enter your name...", maxLength: 20,
-                className: "w-full px-4 py-4 bg-gray-800 border-2 border-gray-600 rounded-xl text-white text-center text-lg font-semibold focus:border-orange-400 focus:outline-none transition-colors placeholder-gray-500"
-              })
-            ),
+          e("p", { className: "text-gray-400 mb-6" }, "Predict the winner of epic animal battles!"),
+          e("div", { className: "mb-3" },
+            e("label", { className: "text-sm text-gray-400 block mb-3" }, "Your battle name:")
+          ),
+          e("div", { className: "bg-gray-800 border-2 border-orange-400/50 rounded-xl px-4 py-4 mb-3" },
+            loading ? e("div", { className: "text-gray-500 text-lg" }, "Generating...")
+              : e("div", { className: "text-orange-400 text-xl font-black " + (rolling ? "opacity-50" : "") }, name)
+          ),
+          e("button", {
+            onClick: genName, disabled: rolling,
+            className: "text-gray-400 hover:text-orange-400 transition-colors text-sm mb-6 inline-flex items-center gap-1 disabled:opacity-30"
+          },
+            e("span", { className: "text-lg" + (rolling ? " animate-spin" : "") }, "\uD83D\uDD04"),
+            " Roll again"
+          ),
+          e("div", null,
             e("button", {
-              type: "submit", disabled: name.trim().length < 1,
+              onClick: handleAccept, disabled: loading || rolling,
               className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all shadow-lg shadow-orange-500/20"
             }, "LET'S GO! \uD83D\uDD25")
           )
