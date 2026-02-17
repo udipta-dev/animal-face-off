@@ -102,39 +102,6 @@
       }
     } catch(ex) { console.warn('Supabase init failed:', ex); }
 
-    // ==================== NAME GENERATOR ====================
-    var NAME_ADJECTIVES = [
-      "Swift", "Fierce", "Shadow", "Thunder", "Iron", "Silent", "Blazing", "Frost",
-      "Storm", "Savage", "Golden", "Mystic", "Dark", "Brave", "Wild", "Mighty",
-      "Rapid", "Phantom", "Steel", "Noble"
-    ];
-    var NAME_ANIMALS = animals.map(function(a) { return a.name.replace(/ /g, ""); });
-
-    function generateRandomName() {
-      var adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
-      var anm = NAME_ANIMALS[Math.floor(Math.random() * NAME_ANIMALS.length)];
-      var num = Math.floor(Math.random() * 90) + 10;
-      return adj + anm + num;
-    }
-
-    function checkNameAvailable(name) {
-      if (!sb) return Promise.resolve(true);
-      return sb.from('leaderboard').select('player_name').eq('player_name', name).limit(1)
-        .then(function(r) {
-          if (r.error) return true;
-          return r.data.length === 0;
-        })
-        .catch(function() { return true; });
-    }
-
-    function generateUniqueName() {
-      var name = generateRandomName();
-      return checkNameAvailable(name).then(function(available) {
-        if (available) return name;
-        return generateUniqueName();
-      });
-    }
-
     function submitScoreToSupabase(entry) {
       if (!sb) return Promise.resolve(null);
       // First check if player already has an entry
@@ -217,6 +184,39 @@
     animals.forEach(function(a) {
       a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
     });
+
+    // ==================== NAME GENERATOR ====================
+    var NAME_ADJECTIVES = [
+      "Swift", "Fierce", "Shadow", "Thunder", "Iron", "Silent", "Blazing", "Frost",
+      "Storm", "Savage", "Golden", "Mystic", "Dark", "Brave", "Wild", "Mighty",
+      "Rapid", "Phantom", "Steel", "Noble"
+    ];
+    var NAME_ANIMALS = animals.map(function(a) { return a.name.replace(/ /g, ""); });
+
+    function generateRandomName() {
+      var adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
+      var anm = NAME_ANIMALS[Math.floor(Math.random() * NAME_ANIMALS.length)];
+      var num = Math.floor(Math.random() * 90) + 10;
+      return adj + anm + num;
+    }
+
+    function checkNameAvailable(name) {
+      if (!sb) return Promise.resolve(true);
+      return sb.from('leaderboard').select('player_name').eq('player_name', name).limit(1)
+        .then(function(r) {
+          if (r.error) return true;
+          return r.data.length === 0;
+        })
+        .catch(function() { return true; });
+    }
+
+    function generateUniqueName() {
+      var name = generateRandomName();
+      return checkNameAvailable(name).then(function(available) {
+        if (available) return name;
+        return generateUniqueName();
+      });
+    }
 
     // ==================== TOURNAMENT LOGIC ====================
     function shuffleArray(arr) {
