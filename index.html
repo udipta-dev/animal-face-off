@@ -144,14 +144,14 @@
     function fetchGlobalLeaderboard(playerName) {
       if (!sb) return Promise.resolve(null);
       // Fetch top 10
-      var topPromise = sb.from('leaderboard').select('player_name, score, streak, rounds_correct, time_seconds, created_at')
-        .order('score', { ascending: false }).order('time_seconds', { ascending: true, nullsFirst: false }).limit(10)
+      var topPromise = sb.from('leaderboard').select('player_name, score, streak, rounds_correct, created_at')
+        .order('score', { ascending: false }).order('created_at', { ascending: true }).limit(10)
         .then(function(r) {
           if (r.error) { console.warn('Supabase fetch error:', r.error.message); return []; }
           return r.data || [];
         });
       // Fetch player's own entry
-      var playerPromise = playerName ? sb.from('leaderboard').select('player_name, score, streak, rounds_correct, time_seconds, created_at')
+      var playerPromise = playerName ? sb.from('leaderboard').select('player_name, score, streak, rounds_correct, created_at')
         .eq('player_name', playerName).limit(1)
         .then(function(r) {
           if (r.error || !r.data || r.data.length === 0) return null;
@@ -837,8 +837,7 @@
             score: score,
             streak: bestStreak,
             rounds_correct: roundsCorrect,
-            tournament_id: tournamentId,
-            time_seconds: elapsed
+            tournament_id: tournamentId
           });
           saveSession({ name: userName });
           setGameState("tournament_end");
@@ -869,12 +868,12 @@
         fetchGlobalLeaderboard(userName).then(function(data) {
           if (data && data.top && data.top.length > 0) {
             var formatted = data.top.map(function(row) {
-              return { name: row.player_name, score: row.score, streak: row.streak, roundsCorrect: row.rounds_correct, timeSeconds: row.time_seconds };
+              return { name: row.player_name, score: row.score, streak: row.streak, roundsCorrect: row.rounds_correct };
             });
             setLeaderboard(formatted);
             setLeaderboardSource("global");
             if (data.player) {
-              setPlayerEntry({ name: data.player.player_name, score: data.player.score, streak: data.player.streak, roundsCorrect: data.player.rounds_correct, timeSeconds: data.player.time_seconds });
+              setPlayerEntry({ name: data.player.player_name, score: data.player.score, streak: data.player.streak, roundsCorrect: data.player.rounds_correct });
             }
             if (data.playerRank) {
               setPlayerRank(data.playerRank);
