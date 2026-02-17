@@ -123,34 +123,48 @@
       }
     } catch(ex) { console.warn('Supabase init failed:', ex); }
 
+    // Division column mapping — add new divisions here
+    var DIV_COLS = {
+      heavyweight: { score: "best_hw_score", streak: "best_hw_streak", correct: "best_hw_correct" },
+      middleweight: { score: "best_mw_score", streak: "best_mw_streak", correct: "best_mw_correct" },
+      dinosaurs: { score: "best_dino_score", streak: "best_dino_streak", correct: "best_dino_correct" }
+    };
+    var ALL_DIV_SCORE_COLS = Object.keys(DIV_COLS).map(function(k) { return DIV_COLS[k].score; });
+    var ALL_DIV_COLS = [];
+    Object.keys(DIV_COLS).forEach(function(k) {
+      var c = DIV_COLS[k];
+      ALL_DIV_COLS.push(c.score, c.streak, c.correct);
+    });
+
     function submitScoreToSupabase(playerName, divisionKey, runScore, runStreak, runCorrect) {
       if (!sb) return Promise.resolve(null);
-      var scoreCol = divisionKey === "heavyweight" ? "best_hw_score" : "best_mw_score";
-      var streakCol = divisionKey === "heavyweight" ? "best_hw_streak" : "best_mw_streak";
-      var correctCol = divisionKey === "heavyweight" ? "best_hw_correct" : "best_mw_correct";
-      return sb.from('leaderboard').select('id, best_hw_score, best_mw_score, best_hw_streak, best_mw_streak, best_hw_correct, best_mw_correct')
+      var cols = DIV_COLS[divisionKey];
+      if (!cols) return Promise.resolve(null);
+      var selectCols = ['id'].concat(ALL_DIV_COLS).join(', ');
+      return sb.from('leaderboard').select(selectCols)
         .eq('player_name', playerName).limit(1)
         .then(function(r) {
           if (r.error || !r.data || r.data.length === 0) {
-            // New player — insert
-            var row = { player_name: playerName, score: runScore, streak: runStreak, rounds_correct: runCorrect, best_hw_score: 0, best_mw_score: 0, best_hw_streak: 0, best_mw_streak: 0, best_hw_correct: 0, best_mw_correct: 0 };
-            row[scoreCol] = runScore;
-            row[streakCol] = runStreak;
-            row[correctCol] = runCorrect;
-            row.score = row.best_hw_score + row.best_mw_score;
+            var row = { player_name: playerName, streak: runStreak, rounds_correct: runCorrect };
+            ALL_DIV_COLS.forEach(function(c) { row[c] = 0; });
+            row[cols.score] = runScore;
+            row[cols.streak] = runStreak;
+            row[cols.correct] = runCorrect;
+            row.score = runScore;
             return sb.from('leaderboard').insert([row]);
           }
           var existing = r.data[0];
-          var oldDivScore = existing[scoreCol] || 0;
+          var oldDivScore = existing[cols.score] || 0;
           if (runScore > oldDivScore) {
             var upd = {};
-            upd[scoreCol] = runScore;
-            upd[streakCol] = runStreak;
-            upd[correctCol] = runCorrect;
-            // Recalc combined score
-            var newHw = divisionKey === "heavyweight" ? runScore : (existing.best_hw_score || 0);
-            var newMw = divisionKey === "middleweight" ? runScore : (existing.best_mw_score || 0);
-            upd.score = newHw + newMw;
+            upd[cols.score] = runScore;
+            upd[cols.streak] = runStreak;
+            upd[cols.correct] = runCorrect;
+            var combined = 0;
+            ALL_DIV_SCORE_COLS.forEach(function(sc) {
+              combined += (sc === cols.score) ? runScore : (existing[sc] || 0);
+            });
+            upd.score = combined;
             upd.created_at = new Date().toISOString();
             return sb.from('leaderboard').update(upd).eq('id', existing.id);
           }
@@ -162,7 +176,8 @@
 
     function fetchPlayerProfile(playerName) {
       if (!sb || !playerName) return Promise.resolve(null);
-      return sb.from('leaderboard').select('best_hw_score, best_mw_score, best_hw_streak, best_mw_streak, best_hw_correct, best_mw_correct, score')
+      var selectCols = ALL_DIV_COLS.concat(['score']).join(', ');
+      return sb.from('leaderboard').select(selectCols)
         .eq('player_name', playerName).limit(1)
         .then(function(r) {
           if (r.error || !r.data || r.data.length === 0) return null;
@@ -209,7 +224,8 @@
     // ==================== ANIMAL DATABASE ====================
     var WEIGHT_CLASSES = {
       heavyweight: { label: "Heavyweight", emoji: "\uD83C\uDFCB\uFE0F", desc: "The biggest, baddest animals on the planet" },
-      middleweight: { label: "Middleweight", emoji: "\uD83D\uDC3A", desc: "Fast, fierce, and deadly mid-size predators" }
+      middleweight: { label: "Middleweight", emoji: "\uD83D\uDC3A", desc: "Fast, fierce, and deadly mid-size predators" },
+      dinosaurs: { label: "Dinosaurs", emoji: "\uD83E\uDD96", desc: "Prehistoric giants and ferocious killers" }
     };
 
     var allAnimals = [
@@ -336,6 +352,68 @@
       { id: "emu_001", name: "Emu", emoji: "\uD83D\uDC26", imageBase: "emu", weightClass: "middleweight",
         stats: { strength: 50, speed: 85, defense: 45, aggression: 75 },
         trump: { name: "War Charge", bonus: 12, desc: "Won a war against Australia" } },
+
+      // ---- DINOSAURS ----
+      { id: "trex_001", name: "T-Rex", emoji: "\uD83E\uDD96", imageBase: "t-rex", weightClass: "dinosaurs",
+        stats: { strength: 95, speed: 58, defense: 78, aggression: 94 },
+        trump: { name: "Bone Crusher Bite", bonus: 18, desc: "12,800 lbs of bite force" } },
+      { id: "spinosaurus_001", name: "Spinosaurus", emoji: "\uD83E\uDD95", imageBase: "spinosaurus", weightClass: "dinosaurs",
+        stats: { strength: 90, speed: 65, defense: 82, aggression: 88 },
+        trump: { name: "Aquatic Ambush", bonus: 18, desc: "Drags prey underwater" } },
+      { id: "giganotosaurus_001", name: "Giganotosaurus", emoji: "\uD83E\uDD96", imageBase: "giganotosaurus", weightClass: "dinosaurs",
+        stats: { strength: 92, speed: 62, defense: 72, aggression: 90 },
+        trump: { name: "Slashing Charge", bonus: 17, desc: "Razor teeth at full sprint" } },
+      { id: "triceratops_001", name: "Triceratops", emoji: "\uD83E\uDD8F", imageBase: "triceratops", weightClass: "dinosaurs",
+        stats: { strength: 90, speed: 48, defense: 92, aggression: 85 },
+        trump: { name: "Triple Horn Charge", bonus: 18, desc: "Three horns, one target" } },
+      { id: "mosasaurus_001", name: "Mosasaurus", emoji: "\uD83D\uDC0B", imageBase: "mosasaurus", weightClass: "dinosaurs",
+        stats: { strength: 88, speed: 70, defense: 75, aggression: 85 },
+        trump: { name: "Ocean Terror", bonus: 17, desc: "Apex predator of the deep" } },
+      { id: "sarcosuchus_001", name: "Sarcosuchus", emoji: "\uD83D\uDC0A", imageBase: "sarcosuchus", weightClass: "dinosaurs",
+        stats: { strength: 92, speed: 40, defense: 90, aggression: 85 },
+        trump: { name: "Super Croc Death Roll", bonus: 18, desc: "40-foot croc locks on" } },
+      { id: "allosaurus_001", name: "Allosaurus", emoji: "\uD83E\uDD96", imageBase: "allosaurus", weightClass: "dinosaurs",
+        stats: { strength: 82, speed: 75, defense: 65, aggression: 85 },
+        trump: { name: "Pack Assault", bonus: 16, desc: "Hunts in coordinated groups" } },
+      { id: "carnotaurus_001", name: "Carnotaurus", emoji: "\uD83E\uDD96", imageBase: "carnotaurus", weightClass: "dinosaurs",
+        stats: { strength: 75, speed: 82, defense: 60, aggression: 88 },
+        trump: { name: "Bull Rush", bonus: 15, desc: "Fastest large theropod" } },
+      { id: "utahraptor_001", name: "Utahraptor", emoji: "\uD83E\uDD96", imageBase: "utahraptor", weightClass: "dinosaurs",
+        stats: { strength: 72, speed: 85, defense: 55, aggression: 88 },
+        trump: { name: "Killing Claw", bonus: 17, desc: "9-inch sickle claw strike" } },
+      { id: "deinonychus_001", name: "Deinonychus", emoji: "\uD83E\uDD96", imageBase: "deinonychus", weightClass: "dinosaurs",
+        stats: { strength: 65, speed: 88, defense: 50, aggression: 85 },
+        trump: { name: "Leaping Strike", bonus: 15, desc: "Pounces from above" } },
+      { id: "velociraptor_001", name: "Velociraptor", emoji: "\uD83E\uDD96", imageBase: "velociraptor", weightClass: "dinosaurs",
+        stats: { strength: 55, speed: 92, defense: 45, aggression: 90 },
+        trump: { name: "Pack Intelligence", bonus: 16, desc: "Outsmarts its prey" } },
+      { id: "dilophosaurus_001", name: "Dilophosaurus", emoji: "\uD83E\uDD96", imageBase: "dilophosaurus", weightClass: "dinosaurs",
+        stats: { strength: 68, speed: 78, defense: 55, aggression: 80 },
+        trump: { name: "Crest Display", bonus: 14, desc: "Distracts then strikes" } },
+      { id: "pachycephalosaurus_001", name: "Pachycephalosaurus", emoji: "\uD83E\uDD95", imageBase: "pachycephalosaurus", weightClass: "dinosaurs",
+        stats: { strength: 65, speed: 70, defense: 75, aggression: 78 },
+        trump: { name: "Skull Ram", bonus: 16, desc: "10-inch thick dome headbutt" } },
+      { id: "ankylosaurus_001", name: "Ankylosaurus", emoji: "\uD83E\uDD95", imageBase: "ankylosaurus", weightClass: "dinosaurs",
+        stats: { strength: 82, speed: 35, defense: 98, aggression: 65 },
+        trump: { name: "Tail Club Smash", bonus: 22, desc: "Bone-shattering club swing" } },
+      { id: "stegosaurus_001", name: "Stegosaurus", emoji: "\uD83E\uDD95", imageBase: "stegosaurus", weightClass: "dinosaurs",
+        stats: { strength: 78, speed: 40, defense: 88, aggression: 68 },
+        trump: { name: "Thagomizer", bonus: 20, desc: "Spiked tail whip" } },
+      { id: "brachiosaurus_001", name: "Brachiosaurus", emoji: "\uD83E\uDD95", imageBase: "brachiosaurus", weightClass: "dinosaurs",
+        stats: { strength: 98, speed: 30, defense: 92, aggression: 50 },
+        trump: { name: "Titan Stomp", bonus: 22, desc: "80 tons comes crashing down" } },
+      { id: "therizinosaurus_001", name: "Therizinosaurus", emoji: "\uD83E\uDD96", imageBase: "therizinosaurus", weightClass: "dinosaurs",
+        stats: { strength: 78, speed: 50, defense: 68, aggression: 75 },
+        trump: { name: "Scythe Claws", bonus: 18, desc: "3-foot razor claws" } },
+      { id: "pteranodon_001", name: "Pteranodon", emoji: "\uD83E\uDD85", imageBase: "pteranodon", weightClass: "dinosaurs",
+        stats: { strength: 45, speed: 95, defense: 35, aggression: 72 },
+        trump: { name: "Dive Bomb", bonus: 16, desc: "Attacks from the sky" } },
+      { id: "quetzalcoatlus_001", name: "Quetzalcoatlus", emoji: "\uD83E\uDD85", imageBase: "quetzalcoatlus", weightClass: "dinosaurs",
+        stats: { strength: 62, speed: 88, defense: 45, aggression: 70 },
+        trump: { name: "Sky Giant", bonus: 18, desc: "Largest flying animal ever" } },
+      { id: "megalosaurus_001", name: "Megalosaurus", emoji: "\uD83E\uDD96", imageBase: "megalosaurus", weightClass: "dinosaurs",
+        stats: { strength: 78, speed: 65, defense: 65, aggression: 80 },
+        trump: { name: "First Hunter", bonus: 15, desc: "The first dinosaur ever found" } },
     ];
     allAnimals.forEach(function(a) {
       a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
