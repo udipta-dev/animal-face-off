@@ -725,8 +725,8 @@
         isWinner && result ? e("div", { className: "absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10" }, "WINNER!") : null,
         e("div", { className: "mb-2" }, e(AnimalAvatar, { animal: animal, size: "large" })),
         e("div", { className: "text-base sm:text-lg font-bold text-center leading-tight truncate w-full" }, animal.name),
-        e("div", { className: "h-[3rem] flex items-start justify-center mt-1 px-1" },
-          factRef ? e("div", { className: "text-xs text-gray-400 leading-snug text-center italic line-clamp-3" }, "\"\u2009" + factRef + "\u2009\"") : null
+        e("div", { className: "mt-1 px-1 overflow-hidden text-center", style: { minHeight: "3.2rem" } },
+          factRef ? e("div", { className: "text-xs text-gray-400 leading-snug italic line-clamp-3" }, "\"\u2009" + factRef + "\u2009\"") : null
         ),
         !result && !disabled ? e("div", { className: "mt-1 text-xs text-orange-400/80 font-medium" }, "TAP TO SELECT") : null
       );
