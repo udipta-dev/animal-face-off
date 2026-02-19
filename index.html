@@ -121,6 +121,256 @@
     // ==================== CONFIG ====================
     var TOURNAMENT_ROUNDS = 10;
 
+    // ==================== LANGUAGE ====================
+    function loadLang() {
+      try { return localStorage.getItem("af_lang") || "en"; } catch(ex) { return "en"; }
+    }
+    function saveLang(lang) {
+      try { localStorage.setItem("af_lang", lang); } catch(ex) {}
+    }
+
+    var T = {
+      en: {
+        // Name entry
+        title1: "ANIMAL", title2: " FACEOFF",
+        subtitle: "Predict the winner of epic animal battles!",
+        nameLabel: "Choose your battle name:",
+        namePlaceholder: "Type a name...",
+        random: "Random",
+        letsGo: "LET'S GO! \uD83D\uDD25",
+        checking: "CHECKING...",
+        nameMinErr: "Name must be at least 3 characters",
+        nameMaxErr: "Name must be 20 characters or less",
+        nameTakenErr: "Name taken, try another!",
+        // Class select
+        chooseDivision1: "CHOOSE YOUR", chooseDivision2: " DIVISION",
+        eachDivision: "Each division has its own set of animals",
+        animals: "animals",
+        // Tournament ready
+        tournament1: "TOURNAMENT", tournament2: " MODE",
+        welcome: "Welcome, ", notYou: "Not you?",
+        division: "Division",
+        roundsInfo: " rounds \u2022 No repeated matchups \u2022 Trump cards enabled!",
+        changeDivision: "Change division",
+        startTournament: "START TOURNAMENT \u2694\uFE0F",
+        viewLeaderboard: "VIEW LEADERBOARD \uD83C\uDFC6",
+        // Header
+        scoreLabel: "SCORE", roundLabel: "ROUND",
+        // Matchup
+        whoWouldWin: "Who Would Win?",
+        tapToSelect: "TAP TO SELECT",
+        winnerBadge: "WINNER!",
+        vs: "VS",
+        // Result modal
+        correct: "CORRECT!", wrong: "WRONG!",
+        winsThisRound: " wins this round!",
+        streakText: " streak! +",
+        pts: " pts",
+        specialTrait: "\u26A1 Special Trait - ",
+        finishTournament: "FINISH TOURNAMENT \uD83C\uDFC6",
+        nextRound: "NEXT ROUND \u27A1\uFE0F",
+        fight: "Fight: ",
+        // Stat labels
+        strength: "Strength", speed: "Speed", defense: "Defense", aggression: "Aggression",
+        // Leaderboard
+        leaderboardTitle: "LEADERBOARD",
+        global: "\uD83C\uDF10 GLOBAL",
+        thisDevice: "\uD83D\uDCF1 THIS DEVICE",
+        yourRank: "Your rank: #",
+        noScores: "No scores yet!",
+        completeToBoard: "Complete a tournament to get on the board",
+        backToGame: "BACK TO GAME",
+        you: " (you)",
+        // Tournament end
+        legendary: "LEGENDARY", excellent: "EXCELLENT", good: "GOOD", keepTrying: "KEEP TRYING",
+        tournamentComplete: "Tournament Complete!",
+        scoreStatLabel: "Score", correctStatLabel: "Correct", bestStreakLabel: "Best Streak", accuracyLabel: "Accuracy",
+        totalTime: "total time",
+        combinedScoreDesc: "Combination of your best scores across all divisions",
+        share: "SHARE \uD83D\uDCE4", copied: "COPIED! \u2705",
+        playAgain: "PLAY AGAIN \uD83D\uDD01",
+        shareText: function(div, score, pct, time, combined) {
+          return "\uD83E\uDD81\u2694\uFE0F Animal Faceoff \u2014 " + div + " Division\n\uD83C\uDFAF " + score + " pts (" + pct + "% accuracy" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 Leaderboard: " + combined + "\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+        },
+        // Footer
+        playingAs: "Playing as ",
+        tapNameToChange: " \u2022 tap name to change",
+        // Info panel
+        howScoring: "How does scoring work?",
+        infoTitle: "How each round works:",
+        info1: "Every animal has 4 stats: Strength, Speed, Defense, and Aggression. These add up to a base power score.",
+        info2: "Each round, both animals get a small random boost or penalty (\u00B15%) to keep things exciting. So a slightly weaker animal can still pull off an upset!",
+        info3: "\u26A1 Trump Cards: Each animal has a special ability with a 30% chance of activating per round. When triggered, it gives a bonus point boost!",
+        info4: "You get 10 points for each correct pick. Land 5 in a row? Bonus 5 points!",
+        infoTip: "Tip: The stronger animal usually wins, but trump cards can flip anything!",
+        loading: "Loading...",
+        // Weight classes
+        wcLabels: {
+          heavyweight: { label: "Heavyweight", desc: "The biggest, baddest animals on the planet" },
+          middleweight: { label: "Middleweight", desc: "Fast, fierce, and deadly mid-size predators" },
+          dinosaurs: { label: "Dinosaurs", desc: "Prehistoric giants and ferocious killers" }
+        }
+      },
+      "zh-TW": {
+        title1: "\u52D5\u7269", title2: "\u5C0D\u6C7A",
+        subtitle: "\u9810\u6E2C\u53F2\u8A70\u52D5\u7269\u5927\u6230\u7684\u52DD\u8005\uFF01",
+        nameLabel: "\u9078\u64C7\u4F60\u7684\u6230\u9B25\u540D\u5B57\uFF1A",
+        namePlaceholder: "\u8F38\u5165\u540D\u5B57...",
+        random: "\u96A8\u6A5F",
+        letsGo: "\u51FA\u767C\uFF01\uD83D\uDD25",
+        checking: "\u6AA2\u67E5\u4E2D...",
+        nameMinErr: "\u540D\u5B57\u81F3\u5C11\u9700\u89813\u500B\u5B57\u5143",
+        nameMaxErr: "\u540D\u5B57\u4E0D\u5F97\u8D85\u904E20\u500B\u5B57\u5143",
+        nameTakenErr: "\u540D\u5B57\u5DF2\u88AB\u4F7F\u7528\uFF0C\u8ACB\u8A66\u5176\u4ED6\uFF01",
+        chooseDivision1: "\u9078\u64C7\u4F60\u7684", chooseDivision2: "\u7D44\u5225",
+        eachDivision: "\u6BCF\u500B\u7D44\u5225\u90FD\u6709\u81EA\u5DF1\u7684\u52D5\u7269",
+        animals: "\u96BB\u52D5\u7269",
+        tournament1: "\u932F\u6A19\u8CFD", tournament2: "\u6A21\u5F0F",
+        welcome: "\u6B61\u8FCE\uFF0C", notYou: "\u4E0D\u662F\u4F60\uFF1F",
+        division: "\u7D44",
+        roundsInfo: " \u8F2A \u2022 \u4E0D\u91CD\u8907\u5C0D\u6230 \u2022 \u738B\u724C\u5DF2\u555F\u7528\uFF01",
+        changeDivision: "\u66F4\u63DB\u7D44\u5225",
+        startTournament: "\u958B\u59CB\u6BD4\u8CFD \u2694\uFE0F",
+        viewLeaderboard: "\u67E5\u770B\u6392\u884C\u699C \uD83C\uDFC6",
+        scoreLabel: "\u5206\u6578", roundLabel: "\u56DE\u5408",
+        whoWouldWin: "\u8AB0\u6703\u8D0F\uFF1F",
+        tapToSelect: "\u9EDE\u64CA\u9078\u64C7",
+        winnerBadge: "\u52DD\u5229\uFF01",
+        vs: "VS",
+        correct: "\u7B54\u5C0D\u4E86\uFF01", wrong: "\u7B54\u932F\u4E86\uFF01",
+        winsThisRound: " \u8D0F\u5F97\u9019\u4E00\u8F2A\uFF01",
+        streakText: " \u9023\u52DD\uFF01+",
+        pts: " \u5206",
+        specialTrait: "\u26A1 \u7279\u6B8A\u6280\u80FD - ",
+        finishTournament: "\u5B8C\u6210\u6BD4\u8CFD \uD83C\uDFC6",
+        nextRound: "\u4E0B\u4E00\u8F2A \u27A1\uFE0F",
+        fight: "\u6230\u529B: ",
+        strength: "\u529B\u91CF", speed: "\u901F\u5EA6", defense: "\u9632\u79A6", aggression: "\u653B\u64CA\u6027",
+        leaderboardTitle: "\u6392\u884C\u699C",
+        global: "\uD83C\uDF10 \u5168\u7403",
+        thisDevice: "\uD83D\uDCF1 \u672C\u88DD\u7F6E",
+        yourRank: "\u4F60\u7684\u6392\u540D\uFF1A#",
+        noScores: "\u9084\u6C92\u6709\u5206\u6578\uFF01",
+        completeToBoard: "\u5B8C\u6210\u4E00\u5834\u6BD4\u8CFD\u5373\u53EF\u4E0A\u699C",
+        backToGame: "\u8FD4\u56DE\u904A\u6232",
+        you: " (\u4F60)",
+        legendary: "\u50B3\u5947", excellent: "\u512A\u79C0", good: "\u4E0D\u932F", keepTrying: "\u7E7C\u7E8C\u52A0\u6CB9",
+        tournamentComplete: "\u6BD4\u8CFD\u5B8C\u6210\uFF01",
+        scoreStatLabel: "\u5206\u6578", correctStatLabel: "\u7B54\u5C0D", bestStreakLabel: "\u6700\u9AD8\u9023\u52DD", accuracyLabel: "\u6E96\u78BA\u7387",
+        totalTime: "\u7E3D\u6642\u9593",
+        combinedScoreDesc: "\u6240\u6709\u7D44\u5225\u6700\u4F73\u6210\u7E3E\u7684\u7E3D\u5408",
+        share: "\u5206\u4EAB \uD83D\uDCE4", copied: "\u5DF2\u8907\u88FD\uFF01\u2705",
+        playAgain: "\u518D\u73A9\u4E00\u6B21 \uD83D\uDD01",
+        shareText: function(div, score, pct, time, combined) {
+          return "\uD83E\uDD81\u2694\uFE0F \u52D5\u7269\u5C0D\u6C7A \u2014 " + div + "\u7D44\n\uD83C\uDFAF " + score + " \u5206 (" + pct + "% \u6E96\u78BA\u7387" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 \u6392\u884C\u699C: " + combined + "\n\n\u4F60\u80FD\u6253\u6557\u6211\u55CE\uFF1F\uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+        },
+        playingAs: "\u73A9\u5BB6\uFF1A",
+        tapNameToChange: " \u2022 \u9EDE\u540D\u5B57\u66F4\u63DB",
+        howScoring: "\u8A08\u5206\u65B9\u5F0F\uFF1F",
+        infoTitle: "\u6BCF\u8F2A\u904A\u6232\u7684\u904B\u4F5C\u65B9\u5F0F\uFF1A",
+        info1: "\u6BCF\u96BB\u52D5\u7269\u6709\u56DB\u9805\u5C6C\u6027\uFF1A\u529B\u91CF\u3001\u901F\u5EA6\u3001\u9632\u79A6\u548C\u653B\u64CA\u6027\u3002\u9019\u4E9B\u52A0\u7E3D\u5F8C\u5F97\u51FA\u57FA\u790E\u6230\u529B\u3002",
+        info2: "\u6BCF\u8F2A\u5C0D\u6230\uFF0C\u96D9\u65B9\u90FD\u6703\u96A8\u6A5F\u7372\u5F97\u5C0F\u5E45\u52A0\u6210\u6216\u6E1B\u76CA\uFF08\u00B15%\uFF09\uFF0C\u8B93\u7D50\u679C\u66F4\u523A\u6FC0\u3002\u8F03\u5F31\u7684\u52D5\u7269\u4E5F\u6709\u7FFB\u76E4\u7684\u6A5F\u6703\uFF01",
+        info3: "\u26A1 \u738B\u724C\uFF1A\u6BCF\u96BB\u52D5\u7269\u90FD\u6709\u4E00\u500B\u7279\u6B8A\u6280\u80FD\uFF0C\u6BCF\u8F2A\u6709 30% \u7684\u6A5F\u7387\u89F8\u767C\uFF0C\u89F8\u767C\u5F8C\u6703\u7372\u5F97\u984D\u5916\u5206\u6578\uFF01",
+        info4: "\u6BCF\u6B21\u7B54\u5C0D\u5F97 10 \u5206\u3002\u9023\u7E8C\u7B54\u5C0D 5 \u984C\uFF1F\u984D\u5916\u52A0 5 \u5206\uFF01",
+        infoTip: "\u63D0\u793A\uFF1A\u8F03\u5F37\u7684\u52D5\u7269\u901A\u5E38\u6703\u8D0F\uFF0C\u4F46\u738B\u724C\u53EF\u4EE5\u7FFB\u8F49\u5C40\u9762\uFF01",
+        loading: "\u8F09\u5165\u4E2D...",
+        wcLabels: {
+          heavyweight: { label: "\u91CD\u91CF\u7D1A", desc: "\u5730\u7403\u4E0A\u6700\u5927\u3001\u6700\u5F37\u7684\u52D5\u7269" },
+          middleweight: { label: "\u4E2D\u91CF\u7D1A", desc: "\u5FEB\u901F\u3001\u5169\u731B\u7684\u4E2D\u578B\u6380\u98DF\u8005" },
+          dinosaurs: { label: "\u6050\u9F8D", desc: "\u53F2\u524D\u5DE8\u7378\u8207\u5169\u731B\u6BBA\u624B" }
+        }
+      }
+    };
+
+    // Animal translations (zh-TW)
+    var ANIMAL_ZH = {
+      // --- HEAVYWEIGHT ---
+      "lion_001": { name: "\u7345\u5B50", trump: "\u7FA4\u9AD4\u7375\u624B", trumpDesc: "\u53EC\u559A\u7345\u7FA4", facts: ["\u751F\u6D3B\u5728\u6700\u591A30\u96BB\u7684\u7345\u7FA4\u4E2D\u2014\u2014\u552F\u4E00\u7684\u7FA4\u5C45\u5927\u8C93", "\u7345\u5B50\u7684\u5410\u8072\u53EF\u4EE5\u50B3\u905E8\u516C\u91CC\u9060", "\u6BCD\u7345\u5B50\u8CA0\u8CAC90%\u7684\u7375\u98DF"] },
+      "tiger_001": { name: "\u8001\u864E", trump: "\u4F0F\u64CA\u653B\u64CA", trumpDesc: "\u5F9E\u9670\u5F71\u4E2D\u649E\u64CA", facts: ["\u4E00\u6B21\u53EF\u4EE5\u540340\u516C\u65A4\u7684\u8089", "\u6C92\u6709\u5169\u96BB\u8001\u864E\u6709\u76F8\u540C\u7684\u6591\u7D0B", "\u80FD\u6E38\u6CF3\u6578\u516C\u91CC\u2014\u2014\u5C11\u6578\u611B\u6C34\u7684\u8C93\u79D1\u52D5\u7269"] },
+      "grizzly_001": { name: "\u7070\u718A", trump: "\u718A\u7684\u6012\u706B", trumpDesc: "\u5168\u529B\u66B4\u8D70", facts: ["\u80FD\u805E\u523029\u516C\u91CC\u5916\u7684\u98DF\u7269", "\u77ED\u8DDD\u96E2\u6642\u901F\u53EF\u905656\u516C\u91CC\u2014\u2014\u6BD4\u99AC\u9084\u5FEB", "\u51AC\u7720\u524D\u6BCF\u5929\u53EF\u4EE5\u540940\u516C\u65A4\u7684\u98DF\u7269"] },
+      "polar_001": { name: "\u5317\u6975\u718A", trump: "\u5317\u6975\u4E4B\u6012", trumpDesc: "\u91CB\u653E\u51B7\u8840\u72C2\u6012", facts: ["\u6700\u5927\u7684\u9678\u5730\u8089\u98DF\u52D5\u7269\u2014\u2014\u9AD4\u91CD\u53EF\u9054680\u516C\u65A4", "\u6BDB\u4E0B\u7684\u76AE\u819A\u5176\u5BE6\u662F\u9ED1\u8272\u7684", "\u53EF\u4EE5\u9023\u7E8C\u6E38\u6CF3\u8D85\u904E100\u516C\u91CC"] },
+      "gorilla_001": { name: "\u5927\u7329\u7329", trump: "\u6376\u80F8", trumpDesc: "\u5A01\u5687\u8D85\u8F09", facts: ["\u529B\u91CF\u662F\u6210\u5E74\u4EBA\u7684\u5341\u500D", "\u8207\u4EBA\u985E\u5171\u4EAB98%\u7684DNA", "\u6BCF\u96BB\u5927\u7329\u7329\u7684\u9F3B\u5B50\u7D0B\u8DEF\u90FD\u662F\u7368\u4E00\u7121\u4E8C\u7684"] },
+      "croc_001": { name: "\u9C77\u9B5A", trump: "\u6B7B\u4EA1\u7FFB\u6EFE", trumpDesc: "\u62DB\u724C\u6BBA\u62DB", facts: ["\u5169\u5104\u5E74\u672A\u8B8A\u2014\u2014\u6BD4\u6050\u9F8D\u66F4\u53E4\u8001", "\u53EF\u4EE5\u5728\u6C34\u4E0B\u618B\u6C23\u8D85\u904E\u4E00\u5C0F\u6642", "\u64C1\u6709\u73FE\u5B58\u52D5\u7269\u4E2D\u6700\u5F37\u7684\u54AC\u5408\u529B"] },
+      "moose_001": { name: "\u99DD\u9E7F", trump: "\u9E7F\u89D2\u7832\u64CA", trumpDesc: "\u63AE\u821E\u5DE8\u5927\u9E7F\u89D2", facts: ["\u9E7F\u89D2\u53EF\u9054\u5169\u7C73\u5BEC\uFF0C\u91CD36\u516C\u65A4", "\u80FD\u6F5B\u5165\u6C346\u7C73\u6DF1\u5403\u6C34\u751F\u690D\u7269", "\u5C0F\u9E7F\u51FA\u751F5\u5929\u5167\u5C31\u80FD\u8DD1\u8D0F\u4EBA\u985E"] },
+      "anaconda_001": { name: "\u68EE\u87BA", trump: "\u7E8F\u7E5E", trumpDesc: "\u64E0\u58D3\u751F\u547D", facts: ["\u80FD\u541E\u4E0B\u6BD4\u81EA\u5DF1\u982D\u66F4\u5927\u7684\u7375\u7269", "\u9AD4\u91CD\u8D85\u904E225\u516C\u65A4\u2014\u2014\u6700\u91CD\u7684\u86C7", "\u76F4\u63A5\u751F\u5C0F\u86C7\uFF0C\u4E0D\u7522\u5375"] },
+      "black_bear_001": { name: "\u9ED1\u718A", trump: "\u6A39\u4E0A\u4F0F\u64CA", trumpDesc: "\u5F9E\u9AD8\u8655\u653B\u64CA", facts: ["\u9AD4\u91CD270\u516C\u65A4\u4ECD\u64C5\u9577\u722C\u6A39", "\u51AC\u7720\u6642\u5FC3\u7387\u964D\u81F3\u6BCF\u5206\u92988\u6B21", "\u6642\u901F\u53EF\u905648\u516C\u91CC\u2014\u2014\u6BD4\u5927\u591A\u6578\u4EBA\u9A0E\u8ECA\u9084\u5FEB"] },
+      "gaur_001": { name: "\u5370\u5EA6\u91CE\u725B", trump: "\u9435\u89D2", trumpDesc: "\u7528\u5DE8\u5927\u7684\u89D2\u523A\u7A7F", facts: ["\u6700\u5927\u7684\u91CE\u751F\u725B\u2014\u2014\u80A9\u9AD8\u9054\u5169\u7C73", "\u725B\u7FA4\u7531\u6700\u5E74\u9577\u7684\u6BCD\u725B\u9818\u5C0E", "\u80FD\u5F9E\u539F\u5730\u8DF3\u904E\u5169\u7C73\u9AD8\u7684\u67F5\u6B04"] },
+      "bison_001": { name: "\u7F8E\u6D32\u91CE\u725B", trump: "\u6A2A\u885D\u76F4\u649E", trumpDesc: "\u5343\u516C\u65A4\u7684\u885D\u64CA\u529B", facts: ["\u9AD4\u91CD\u8D85\u904E900\u516C\u65A4\u4ECD\u53EF\u8DD156\u516C\u91CC", "\u66FE\u5F9E6000\u842C\u982D\u92B3\u6E1B\u5230\u50C5\u5269541\u982D", "\u5C0F\u725B\u51FA\u751F\u6642\u662F\u6A58\u8272\u7684\uFF0C\u5E7E\u500B\u6708\u5F8C\u8B8A\u68D5\u8272"] },
+      "jaguar_001": { name: "\u7F8E\u6D32\u8C79", trump: "\u7891\u9ACE\u78A7\u58D3", trumpDesc: "\u54AC\u7A7F\u9AA8\u982D", facts: ["\u54AC\u5408\u529B\u53EF\u4EE5\u54AC\u78E8\u9F9C\u6BFC\u548C\u7A7F\u900F\u982D\u9ACE", "\u7F8E\u6D32\u552F\u4E00\u7684\u5927\u578B\u8C93\u79D1\u52D5\u7269", "\u611B\u6E38\u6CF3\uFF0C\u6703\u5728\u6CB3\u4E2D\u7375\u6355\u51F1\u9580\u9C77"] },
+      "cape_buffalo_001": { name: "\u975E\u6D32\u6C34\u725B", trump: "\u8E29\u8E0F", trumpDesc: "\u5168\u529B\u885D\u92CB", facts: ["\u7DB1\u865F\u300C\u9ED1\u6B7B\u795E\u300D\u2014\u2014\u6BD4\u4EFB\u4F55\u5927\u8C93\u6BBA\u6B7B\u66F4\u591A\u7375\u4EBA", "\u8A18\u6176\u529B\u9A5A\u4EBA\uFF0C\u6703\u4F0F\u64CA\u904E\u53BB\u7684\u653B\u64CA\u8005", "\u725B\u7FA4\u6703\u6295\u7968\u6C7A\u5B9A\u884C\u9032\u65B9\u5411"] },
+      "komodo_001": { name: "\u79D1\u6469\u591A\u9F8D", trump: "\u6BD2\u6DB2\u54AC\u50B7", trumpDesc: "\u6709\u6BD2\u553E\u6DB2\u767C\u4F5C", facts: ["\u6709\u6BD2\u7684\u54AC\u50B7\u8B93\u7375\u7269\u5728\u6578\u5C0F\u6642\u5167\u5931\u8840", "\u4E00\u9813\u53EF\u4EE5\u5403\u4E0B\u9AD4\u91CD80%\u7684\u98DF\u7269", "\u77ED\u8DDD\u96E2\u6642\u901F\u53EF\u905620\u516C\u91CC"] },
+      "cassowary_001": { name: "\u98DF\u706B\u96DE", trump: "\u5315\u9996\u8E22\u64CA", trumpDesc: "\u5229\u722A\u65AC\u64CA", facts: ["\u6700\u5371\u96AA\u7684\u9CE5\u2014\u2014\u64C1\u670913\u516C\u5206\u7684\u5315\u9996\u5229\u722A", "\u80FD\u5728\u5BC6\u6797\u4E2D\u4EE550\u516C\u91CC\u7684\u6642\u901F\u5954\u8DD1", "\u7236\u89AA\u7368\u81EA\u64AB\u990A\u96DB\u9CE59\u500B\u6708"] },
+      "wildebeest_001": { name: "\u725B\u7F9A", trump: "\u7FA4\u9AD4\u885D\u92CB", trumpDesc: "\u56E3\u7D50\u529B\u91CF", facts: ["\u6BCF\u5E74\u9077\u5F991600\u516C\u91CC\uFF0C\u7FA4\u9AD4\u6578\u4EE5\u767E\u842C\u8A08", "\u5C0F\u725B\u51FA\u751F\u5E7E\u5206\u9418\u5C31\u80FD\u884C\u8D70", "\u6BCF\u5E74\u6709\u8D85\u904E25\u842C\u96BB\u5728\u9077\u5F99\u4E2D\u6B7B\u4EA1"] },
+      "kangaroo_001": { name: "\u888B\u9F20", trump: "\u5F37\u529B\u8E22\u64CA", trumpDesc: "\u6BC0\u6EC5\u6027\u4E0B\u58D3\u8E22", facts: ["\u4E00\u6B21\u53EF\u4EE5\u8DF3\u8E8D9\u7C73\u9060", "\u7528\u5C3E\u5DF4\u50CF\u7B2C\u4E94\u689D\u817F\u4E00\u6A23\u4FDD\u6301\u5E73\u8861\u548C\u6230\u9B25", "\u4E0D\u80FD\u5F80\u5F8C\u8D70"] },
+      "chimpanzee_001": { name: "\u9ED1\u7329\u7329", trump: "\u7FA4\u9AD4\u72C2\u66B4", trumpDesc: "\u53EC\u559A\u5169\u731B\u7684\u66B4\u5F92", facts: ["\u8207\u4EBA\u985E\u5171\u4EAB98.7%\u7684DNA", "\u6703\u4F7F\u7528\u5DE5\u5177\uFF0C\u5982\u7528\u6A39\u679D\u91E3\u767D\u87FB", "\u80FD\u5B78\u7FD2\u4E26\u4F7F\u7528\u624B\u8A9E"] },
+      "walrus_001": { name: "\u6D77\u8C61", trump: "\u7259\u885D\u92CB", trumpDesc: "1360\u516C\u65A4\u52A0\u9577\u7259", facts: ["\u9577\u7259\u53EF\u9577\u905E1\u7C73\uFF0C\u6BCF\u6839\u91CD5\u516C\u65A4", "\u80FD\u6E1B\u7DE9\u5FC3\u7387\u4EE5\u6291\u53D7\u6781\u5BD2\u6D77\u6C34", "\u5728\u9678\u5730\u4E0A\u6BCF\u5929\u53EF\u4EE5\u775D19\u500B\u5C0F\u6642"] },
+      "ostrich_001": { name: "\u99DD\u9CE5", trump: "\u6975\u901F\u885D\u523A", trumpDesc: "\u6700\u5FEB\u7684\u96D9\u817F", facts: ["\u6700\u5FEB\u7684\u9678\u5730\u9CE5\u2014\u2014\u6642\u901F72\u516C\u91CC", "\u773C\u775B\u6BD4\u5927\u8166\u9084\u5927", "\u4E00\u9846\u9D1B\u9CE5\u86CB\u76F8\u7576\u65BC24\u9846\u96DE\u86CB"] },
+      // --- MIDDLEWEIGHT ---
+      "cougar_001": { name: "\u7F8E\u6D32\u7345", trump: "\u7121\u8072\u64B2\u64CA", trumpDesc: "\u5F9E\u5929\u800C\u964D", facts: ["\u80FD\u5F9E\u9759\u6B62\u72C0\u614B\u6C34\u5E73\u8DF3\u8E8D12\u7C73", "\u6D3B\u52D5\u7BC4\u570D\u662F\u7F8E\u6D32\u6240\u6709\u91CE\u751F\u54FA\u4E73\u52D5\u7269\u4E2D\u6700\u5927\u7684", "\u4E0D\u80FD\u5410\u8072\u2014\u2014\u50CF\u5BB6\u8C93\u4E00\u6A23\u6703\u546A\u546A"] },
+      "snow_leopard_001": { name: "\u96EA\u8C79", trump: "\u5E7D\u9748\u64CA", trumpDesc: "\u96EA\u5C71\u7684\u5E7D\u9748", facts: ["\u53EF\u4EE5\u8DF3\u8E8D15\u7C73\u2014\u2014\u662F\u9AD4\u9577\u76846\u500D", "\u5C3E\u5DF4\u5E7E\u4E4E\u548C\u8EAB\u9AD4\u4E00\u6A23\u9577\uFF0C\u7528\u65BC\u5E73\u8861", "\u6975\u70BA\u7A00\u6709\uFF0C\u88AB\u7A31\u70BA\u300C\u96EA\u5C71\u5E7D\u9748\u300D"] },
+      "grey_wolf_001": { name: "\u7070\u72FC", trump: "\u547C\u53EB\u72FC\u7FA4", trumpDesc: "\u72FC\u7FA4\u4F86\u4E86", facts: ["\u72FC\u7FA4\u53EF\u4EE5\u7375\u6BBA\u9AD4\u578B10\u500D\u5927\u7684\u7375\u7269", "\u4E00\u5929\u53EF\u4EE5\u884C\u8D7048\u516C\u91CC\u4F86\u7375\u98DF", "\u7D42\u8EAB\u914D\u5C0D\uFF0C\u7236\u6BCD\u90FD\u6703\u64AB\u990A\u5C0F\u72FC"] },
+      "wolverine_001": { name: "\u72FC\u7360", trump: "\u72C2\u66B4\u8005", trumpDesc: "\u6230\u4E00\u5207\uFF0C\u4EC0\u9EBC\u90FD\u4E0D\u6015", facts: ["\u66FE\u8207\u718A\u548C\u72FC\u722D\u596A\u98DF\u7269", "\u80FD\u805E\u5230\u96EA\u4E0B6\u7C73\u6DF1\u7684\u7375\u7269", "\u6BCF\u5929\u884C\u8D70\u8D85\u904E24\u516C\u91CC\u4E0D\u505C\u6B47"] },
+      "spotted_hyena_001": { name: "\u6591\u9B23", trump: "\u788E\u9AA8\u8005", trumpDesc: "\u4E0B\u9852\u54AC\u7A7F\u9AA8\u982D", facts: ["\u54AC\u5408\u529B\u905E500\u516C\u65A4\u2014\u2014\u80FD\u54AC\u788E\u9AA8\u982D\u5403\u9AA8\u9AD3", "\u751F\u6D3B\u5728\u6700\u591A80\u96BB\u7684\u6BCD\u7CFB\u65CF\u7FA4\u4E2D", "\u53EF\u4EE5\u6D88\u5316\u9AA8\u982D\u3001\u89D2\u548C\u7259\u9F52"] },
+      "wild_boar_001": { name: "\u91CE\u8C6C", trump: "\u7259\u885D\u92CB", trumpDesc: "\u7259\u9F52\u5148\u884C\u885D\u92CB", facts: ["\u88AB\u4EBA\u985E\u7375\u6BBA\u8D85\u904E\u4E00\u842C\u5E74", "\u80FD\u4EE548\u516C\u91CC\u7684\u6642\u901F\u5954\u8DD1\u4E26\u6E38\u904E\u6CB3\u6D41", "\u6BCF\u6B21\u5F35\u5634\u6642\u7259\u9F52\u90FD\u6703\u81EA\u52D5\u78E8\u5229"] },
+      "african_wild_dog_001": { name: "\u975E\u6D32\u91CE\u72AC", trump: "\u63A5\u529B\u7375\u6BBA", trumpDesc: "\u8F2A\u6D41\u8FFD\u64CA\u7375\u7269", facts: ["80%\u7684\u7375\u98DF\u6210\u529F\u7387\u2014\u2014\u6240\u6709\u6380\u98DF\u8005\u4E2D\u6700\u9AD8", "\u6BCF\u500B\u6210\u54E1\u90FD\u6703\u5E6B\u52A9\u71DF\u990A\u50B7\u75C5\u8005", "\u5C0F\u72D7\u5148\u5403\u98EF\uFF0C\u751A\u81F3\u5728\u982D\u72FC\u4E4B\u524D"] },
+      "warthog_001": { name: "\u75A3\u8C6C", trump: "\u6D1E\u7A74\u885D\u92CB", trumpDesc: "\u5F9E\u63A9\u9AD4\u4E2D\u7206\u767C\u885D\u51FA", facts: ["\u80CC\u671D\u5F80\u6D1E\u88E1\u8DD1\uFF0C\u7528\u7259\u9F52\u9632\u79A6", "\u4E7E\u5B63\u53EF\u4EE5\u5E7E\u9031\u4E0D\u559D\u6C34", "\u8B93\u9CE5\u9A0E\u5728\u80CC\u4E0A\u5403\u87B3\u87F2\u548C\u5BC4\u751F\u87F2"] },
+      "cheetah_001": { name: "\u7375\u8C79", trump: "\u6975\u901F", trumpDesc: "\u6642\u901F\u905E112\u516C\u91CC", facts: ["\u4E09\u79D2\u5167\u9054\u5230\u6642\u901F112\u516C\u91CC\u2014\u2014\u6BD4\u8DD1\u8ECA\u9084\u5FEB", "\u4E0D\u80FD\u5410\u8072\u2014\u2014\u800C\u662F\u5543\u5543\u53EB\u548C\u546A\u546A", "\u6BCF\u6B21\u7375\u6BBA\u4E0D\u8D85\u904E60\u79D2"] },
+      "red_kangaroo_001": { name: "\u7D05\u888B\u9F20", trump: "\u62F3\u64CA\u7D44\u5408", trumpDesc: "\u5FEB\u901F\u9023\u64CA", facts: ["\u8E22\u64CA\u529B\u9054345\u516C\u65A4", "\u96C4\u6027\u6703\u5C55\u793A\u4E8C\u982D\u808C\u4F86\u5438\u5F15\u96CC\u6027", "\u5C0F\u888B\u9F20\u5728\u80B2\u5152\u888B\u4E2D\u751F\u6D3B8\u500B\u6708"] },
+      "clouded_leopard_001": { name: "\u96F2\u8C79", trump: "\u5927\u7259\u653B\u64CA", trumpDesc: "\u8EAB\u9AD4\u6BD4\u4F8B\u4E2D\u6700\u9577\u7684\u7259", facts: ["\u72AC\u9F52\u8207\u9AD4\u578B\u4E4B\u6BD4\u662F\u6240\u6709\u8C93\u79D1\u4E2D\u6700\u9577\u7684", "\u53EF\u4EE5\u7528\u5F8C\u8173\u5012\u639B\u5728\u6A39\u679D\u4E0A", "\u53EF\u4EE5\u50CF\u677E\u9F20\u4E00\u6A23\u982D\u671D\u4E0B\u722C\u6A39"] },
+      "baboon_001": { name: "\u72D2\u72D2", trump: "\u7FA4\u9AD4\u72C2\u66B4", trumpDesc: "\u53EC\u559A\u6574\u500B\u65CF\u7FA4", facts: ["\u8D85\u904E100\u96BB\u7684\u65CF\u7FA4\u6709\u8907\u96DC\u7684\u793E\u6703\u968E\u5C64", "\u80FD\u4EE548\u516C\u91CC\u7684\u6642\u901F\u9003\u907F\u6380\u98DF\u8005", "\u4E92\u76F8\u7406\u6BDB\u4F86\u5EFA\u7ACB\u806F\u76DF\u548C\u53CB\u8ABC"] },
+      "caiman_001": { name: "\u51F1\u9580\u9C77", trump: "\u7A69\u56FA\u9396\u54AC", trumpDesc: "\u4E0B\u9852\u7DCA\u7DCA\u9396\u4F4F", facts: ["\u80FD\u5728\u6C34\u4E0B\u4E00\u52D5\u4E0D\u52D5\u8D85\u904E\u4E00\u5C0F\u6642", "\u773C\u775B\u548C\u9F3B\u5B54\u4F4D\u65BC\u982D\u9802\u4EE5\u4FBF\u96B1\u853D", "\u80C3\u9178\u5F37\u5230\u80FD\u6EB6\u89E3\u9AA8\u982D"] },
+      "king_cobra_001": { name: "\u7709\u773C\u738B\u86C7", trump: "\u6BD2\u6DB2\u653B\u64CA", trumpDesc: "\u4E00\u54AC\u81F4\u547D", facts: ["\u4E00\u54AC\u7684\u6BD2\u6DB2\u8DB3\u4EE5\u6BBA\u6B7B\u4E00\u982D\u5927\u8C61", "\u80FD\u6316\u8D77\u8EAB\u9AD4\u4E09\u5206\u4E4B\u4E00\u2014\u2014\u8207\u4EBA\u7684\u773C\u775B\u9F4A\u5E73", "\u552F\u4E00\u6703\u7BE9\u5DE2\u7684\u86C7"] },
+      "dhole_001": { name: "\u8C7A", trump: "\u7FA4\u9AD4\u653B\u64CA", trumpDesc: "\u6210\u7FA4\u653B\u64CA", facts: ["\u7528\u54E8\u5B50\u5728\u7375\u6BBA\u6642\u4EA4\u6D41", "\u6210\u7FA4\u6642\u80FD\u7375\u6BBA\u9AD4\u578B10\u500D\u5927\u7684\u7375\u7269", "\u5C11\u6578\u6703\u7528\u53CD\u82BB\u5582\u990A\u5E7C\u72AC\u7684\u91CE\u72AC\u4E4B\u4E00"] },
+      "tasmanian_devil_001": { name: "\u8882\u9B54", trump: "\u9B54\u9B3C\u5C16\u53EB", trumpDesc: "\u6050\u6016\u5C16\u53EB+\u54AC\u64CA", facts: ["\u9AD4\u578B\u6BD4\u4F8B\u4E2D\u54AC\u5408\u529B\u6700\u5F37\u7684\u54FA\u4E73\u52D5\u7269", "\u71DF\u990A\u826F\u597D\u6642\u8102\u80AA\u5132\u5B58\u5728\u5C3E\u5DF4\u88E1", "\u5C16\u53EB\u58F0\u66FE\u5687\u5230\u65E9\u671F\u6B50\u6D32\u79FB\u6C11"] },
+      "giant_anteater_001": { name: "\u5927\u98DF\u87FB\u7378", trump: "\u722A\u64CA", trumpDesc: "10\u516C\u5206\u5229\u722A", facts: ["\u820C\u982D\u6BCF\u5206\u9418\u5F48\u51FA150\u6B21\uFF0C\u6BCF\u5929\u5403\u4E0935000\u96BB\u87FB\u87FB", "\u6C92\u6709\u7259\u9F52\u2014\u2014\u7528\u53E3\u4E2D\u7684\u786C\u6D41\u78E8\u788E\u98DF\u7269", "\u722A\u5B50\u5F37\u5230\u80FD\u6495\u958B\u50CF\u6C34\u6CE5\u4E00\u6A23\u786C\u7684\u767D\u87FB\u4E18"] },
+      "ocelot_001": { name: "\u8C79\u8C93", trump: "\u591C\u9593\u4F0F\u64CA", trumpDesc: "\u5728\u9ED1\u6697\u4E2D\u653B\u64CA", facts: ["\u591C\u8996\u80FD\u529B\u662F\u4EBA\u985E\u76846\u500D", "\u66FE\u56E0\u6BDB\u76AE\u88AB\u7375\u81F3\u6FD5\u81E8\u6EC5\u7D55", "\u6BCF\u96BB\u8C79\u8C93\u7684\u82B1\u7D0B\u90FD\u662F\u7368\u4E00\u7121\u4E8C\u7684"] },
+      "coyote_001": { name: "\u90CA\u72FC", trump: "\u62FE\u8352\u8A08\u8B00", trumpDesc: "\u667A\u53D6\u4E26\u6301\u4E45\u6230", facts: ["\u5118\u7BA1\u88AB\u7375\u6BBA\u6578\u767E\u5E74\u4ECD\u64F4\u5927\u4E86\u7BC4\u570D", "\u6642\u901F\u53EF\u905E64\u516C\u91CC\u4E14\u80FD\u9577\u8DDD\u96E2\u6E38\u6CF3", "\u6709\u6642\u6703\u548C\u7370\u5408\u4F5C\u7375\u98DF"] },
+      "emu_001": { name: "\u9D1B\u9D1F", trump: "\u6230\u722D\u885D\u92CB", trumpDesc: "\u66FE\u8D0F\u904E\u6FB3\u6D32\u8ECD\u968A", facts: ["\u57281932\u5E74\u7684\u5927\u9D1B\u9D1F\u6230\u722D\u4E2D\u6253\u6557\u4E86\u6FB3\u6D32\u8ECD\u968A", "\u53EF\u4EE5\u6578\u9031\u4E0D\u5403\u6771\u897F", "\u6709\u5169\u5957\u773C\u77BC\u2014\u2014\u4E00\u5957\u7728\u773C\uFF0C\u4E00\u5957\u64CB\u7070\u5875"] },
+      // --- DINOSAURS ---
+      "trex_001": { name: "\u66B4\u9F8D", trump: "\u788E\u9AA8\u54AC\u5408", trumpDesc: "5800\u516C\u65A4\u54AC\u5408\u529B", facts: ["\u54AC\u5408\u529B\u905E5800\u516C\u65A4\u2014\u2014\u80FD\u50CF\u7D19\u4E00\u6A23\u58D3\u788E\u9AA8\u982D", "\u4E00\u53E3\u53EF\u4EE5\u5403\u4E0B225\u516C\u65A4\u7684\u8089", "\u50C56800\u842C\u5E74\u524D\u751F\u6D3B\u5728\u5317\u7F8E\u6D32"] },
+      "spinosaurus_001": { name: "\u68D8\u9F8D", trump: "\u6C34\u4E2D\u4F0F\u64CA", trumpDesc: "\u5C07\u7375\u7269\u62D6\u5165\u6C34\u4E2D", facts: ["\u6700\u5927\u7684\u8089\u98DF\u6050\u9F8D\u2014\u2014\u6BD4\u66B4\u9F8D\u9084\u5927", "\u5927\u90E8\u5206\u6642\u9593\u5728\u6C34\u4E2D\u5EA6\u904E\uFF0C\u50CF\u5DE8\u578B\u9C77\u9B5A", "\u80CC\u4E0A\u6709\u5169\u7C73\u9AD8\u7684\u8096\u7528\u65BC\u5C55\u793A\u6216\u6EAB\u5EA6\u8ABF\u7BC0"] },
+      "giganotosaurus_001": { name: "\u5357\u65B9\u5DE8\u7378\u9F8D", trump: "\u65AC\u64CA\u885D\u92CB", trumpDesc: "\u5168\u901F\u885D\u92CB\u7684\u92F8\u9F52", facts: ["\u8166\u90E8\u5F62\u72C0\u50CF\u9999\u8549\uFF0C\u5927\u5C0F\u50C5\u70BA\u66B4\u9F8D\u7684\u4E00\u534A", "\u6BD4\u66B4\u9F8D\u65E93000\u842C\u5E74\u2014\u2014\u5B83\u5011\u5F9E\u672A\u76F8\u9047", "\u9AD4\u91CD\u53EF\u9054\u516B\u5678\u2014\u2014\u6BD4\u5927\u8C61\u9084\u91CD"] },
+      "triceratops_001": { name: "\u4E09\u89D2\u9F8D", trump: "\u4E09\u89D2\u885D\u92CB", trumpDesc: "\u4E09\u652F\u89D2\uFF0C\u4E00\u500B\u76EE\u6A19", facts: ["\u9838\u76FE\u7531\u5BE6\u5FC3\u9AA8\u982D\u7D44\u6210\u2014\u2014\u5982\u540C\u5167\u7F6E\u76FE\u724C", "\u6709\u591A\u9054800\u9846\u6392\u5217\u6210\u67F1\u72C0\u7684\u7259\u9F52\u7528\u65BC\u7814\u78E8\u690D\u7269", "\u5C0F\u884C\u661F\u649E\u64CA\u524D\u6700\u5F8C\u5B58\u6D3B\u7684\u6050\u9F8D\u4E4B\u4E00"] },
+      "mosasaurus_001": { name: "\u6EC4\u9F8D", trump: "\u6D77\u6D0B\u6050\u61FC", trumpDesc: "\u6DF1\u6D77\u9802\u7D1A\u6380\u98DF\u8005", facts: ["\u7D71\u6CBB\u6D77\u6D0B\uFF0C\u9AD4\u9577\u53EF\u8D85\u904E15\u7C73", "\u64C1\u6709\u96D9\u9230\u4E0B\u9852\uFF0C\u53EF\u4EE5\u6574\u500B\u541E\u4E0B\u7375\u7269", "\u5176\u5BE6\u4E0D\u662F\u6050\u9F8D\u2014\u2014\u662F\u5DE8\u578B\u6D77\u6D0B\u8725\u87F4"] },
+      "sarcosuchus_001": { name: "\u5E1D\u9C77", trump: "\u8D85\u7D1A\u9C77\u9B5A\u6B7B\u4EA1\u7FFB\u6EFE", trumpDesc: "12\u7C73\u5DE8\u9C77\u9396\u5B9A\u76EE\u6A19", facts: ["\u4E00\u689D12\u7C73\u7684\u9C77\u9B5A\uFF0C\u9AD4\u91CD\u5982\u5927\u8C61", "\u4E0B\u9852\u9577\u5169\u7C73\uFF0C\u6709\u8D85\u904E100\u9846\u7259\u9F52", "\u5728\u4E00\u5104\u4E00\u5343\u4E8C\u767E\u842C\u5E74\u524D\u8207\u6050\u9F8D\u4E26\u5B58"] },
+      "allosaurus_001": { name: "\u7570\u7279\u9F8D", trump: "\u7FA4\u9AD4\u7A81\u8972", trumpDesc: "\u5354\u8ABF\u5718\u9AD4\u7375\u6BBA", facts: ["\u624B\u81C2\u5F37\u58EF\u5230\u53EF\u4EE5\u62B5\u4F4F\u7375\u7269\u540C\u6642\u64B2\u54AC", "\u4F8F\u7F85\u7D00\u6642\u671F\u6700\u5E38\u898B\u7684\u6380\u98DF\u8005", "\u5316\u77F3\u8B49\u636E\u986F\u793A\u5B83\u5011\u6709\u6642\u6210\u7FA4\u7375\u98DF"] },
+      "carnotaurus_001": { name: "\u98DF\u8089\u725B\u9F8D", trump: "\u516C\u725B\u885D\u92CB", trumpDesc: "\u6700\u5FEB\u7684\u5927\u578B\u7378\u8173\u4E9E\u76EE", facts: ["\u6700\u5FEB\u7684\u5927\u578B\u8089\u98DF\u8005\u2014\u2014\u9AD4\u578B\u50CF\u516C\u725B", "\u524D\u80A2\u6BD4\u66B4\u9F8D\u9084\u5C0F", "\u540D\u5B57\u7684\u610F\u601D\u662F\u300C\u98DF\u8089\u725B\u300D\u56E0\u70BA\u5B83\u7684\u89D2"] },
+      "utahraptor_001": { name: "\u7336\u4ED6\u76DC\u9F8D", trump: "\u81F4\u547D\u722A", trumpDesc: "23\u516C\u5206\u93AE\u5200\u722A\u653B\u64CA", facts: ["\u93AE\u5200\u722A\u957723\u516C\u5206\u2014\u2014\u50CF\u4E00\u628A\u5F4E\u5200", "\u9AD4\u91CD\u8D85\u904E450\u516C\u65A4\u2014\u2014\u6BD4\u8FF5\u731B\u9F8D\u5927\u5F97\u591A", "\u65BC1993\u5E74\u5728\u7336\u4ED6\u5DDE\u88AB\u767C\u73FE\uFF0C\u540C\u5E74\u4F8F\u7F85\u7D00\u516C\u5712\u4E0A\u6620"] },
+      "deinonychus_001": { name: "\u6050\u722A\u9F8D", trump: "\u98DB\u8E8D\u64B2\u64CA", trumpDesc: "\u5F9E\u9AD8\u8655\u64B2\u4E0B", facts: ["\u6210\u7FA4\u767C\u73FE\u2014\u2014\u8B49\u660E\u76DC\u9F8D\u6210\u7FA4\u7375\u98DF", "\u4F8F\u7F85\u7D00\u516C\u5712\u4E2D\u300C\u8FF5\u731B\u9F8D\u300D\u7684\u539F\u578B", "\u80FD\u8DF3\u4E0A\u7375\u7269\u4E26\u7528\u8173\u722A\u65AC\u64CA"] },
+      "velociraptor_001": { name: "\u8FF5\u731B\u9F8D", trump: "\u7FA4\u9AD4\u667A\u6167", trumpDesc: "\u667A\u53D6\u7375\u7269", facts: ["\u5BE6\u969B\u4E0A\u53EA\u6709\u706B\u96DE\u5927\u5C0F\u2014\u2014\u4E0D\u50CF\u96FB\u5F71\u88E1\u90A3\u6A23", "\u5168\u8EAB\u8986\u84CB\u7FBD\u6BDB\u50CF\u9CE5\u4E00\u6A23", "\u751F\u6D3B\u5728\u8499\u53E4\u6C99\u6F20\uFF0C\u4E0D\u662F\u71B1\u5E36\u53E2\u6797"] },
+      "dilophosaurus_001": { name: "\u96D9\u5180\u9F8D", trump: "\u51A0\u98FE\u5C55\u793A", trumpDesc: "\u5206\u6563\u6CE8\u610F\u529B\u5F8C\u653B\u64CA", facts: ["\u982D\u4E0A\u6709\u96D9\u51A0\u2014\u2014\u5BE6\u969B\u4E0A\u6C92\u6709\u6BD2\u6DB2\uFF0C\u96FB\u5F71\u662F\u865B\u69CB\u7684", "\u6700\u65E9\u7684\u5927\u578B\u8089\u98DF\u6050\u9F8D\u4E4B\u4E00", "\u5BE6\u969B\u9AD36\u7C73\u2014\u2014\u6BD4\u96FB\u5F71\u88E1\u5927\u5F97\u591A"] },
+      "pachycephalosaurus_001": { name: "\u539A\u982D\u9F8D", trump: "\u982D\u69CC\u649E\u64CA", trumpDesc: "25\u516C\u5206\u53A5\u5BE6\u9ACE\u982D\u885D\u649E", facts: ["\u982D\u9ACE\u670925\u516C\u5206\u539A\u7684\u5BE6\u5FC3\u9AA8", "\u53EF\u80FD\u50CF\u5927\u89D2\u7F8A\u4E00\u6A23\u7528\u982D\u649E\u64CA\u5C0D\u624B", "\u751F\u6D3B\u5728\u6050\u9F8D\u6642\u4EE3\u672B\u671F\uFF0C\u7D046600\u842C\u5E74\u524D"] },
+      "ankylosaurus_001": { name: "\u7532\u9F8D", trump: "\u5C3E\u939A\u91CD\u64CA", trumpDesc: "\u7C89\u9AA8\u5C3E\u939A\u63EE\u64CA", facts: ["\u5C3E\u939A\u53EF\u4EE5\u6253\u65B7\u66B4\u9F8D\u7684\u817F\u9AA8", "\u5C31\u9023\u773C\u77BC\u90FD\u88AB\u9AA8\u7532\u4FDD\u8B77", "\u9AD4\u91CD8\u5678\u2014\u2014\u50CF\u4E00\u8F1B\u6D3B\u5764\u514B"] },
+      "stegosaurus_001": { name: "\u528D\u9F8D", trump: "\u5C3E\u523A\u91CD\u64CA", trumpDesc: "\u523A\u5C3E\u63EE\u97AD", facts: ["\u96D6\u7136\u9AD4\u578B\u50CF\u5DF4\u58EB\u4F46\u8166\u90E8\u53EA\u6709\u6838\u6843\u5927\u5C0F", "\u80CC\u677F\u53EF\u80FD\u8B8A\u7D05\u4F86\u5687\u8DDD\u6380\u98DF\u8005", "\u6BD4\u66B4\u9F8D\u65E98000\u842C\u5E74\u2014\u2014\u5B83\u5011\u4E4B\u9593\u7684\u6642\u9593\u5DEE\u6BD4\u66B4\u9F8D\u548C\u6211\u5011\u9084\u5927"] },
+      "brachiosaurus_001": { name: "\u8155\u9F8D", trump: "\u6CF0\u5766\u8E29\u8E0F", trumpDesc: "70\u5678\u91CD\u58D3", facts: ["\u9AD4\u91CD70\u5678\u2014\u2014\u5FC3\u81DF\u5C07\u8840\u6DB2\u6CF5\u52309\u7C73\u9AD8\u7684\u982D\u90E8", "\u6BCF\u5929\u5403\u4E0B400\u516C\u65A4\u690D\u7269", "\u9F3B\u5B54\u9577\u5728\u982D\u9802\u50CF\u6F5B\u6C34\u901A\u6C23\u7BA1"] },
+      "therizinosaurus_001": { name: "\u93AE\u5200\u9F8D", trump: "\u5DE8\u93AE\u722A", trumpDesc: "90\u516C\u5206\u5229\u722A", facts: ["\u64C1\u6709\u670990\u516C\u5206\u7684\u722A\u5B50\u2014\u2014\u53F2\u4E0A\u6700\u9577", "\u5118\u7BA1\u722A\u5B50\u53EF\u6015\u4F46\u5176\u5BE6\u662F\u8349\u98DF\u52D5\u7269", "\u770B\u8D77\u4F86\u50CF\u4E00\u96BB\u5DE8\u5927\u7684\u6709\u7FBD\u6BDB\u6A39\u61F6"] },
+      "pteranodon_001": { name: "\u7121\u9F52\u7FFC\u9F8D", trump: "\u4FEF\u885D\u8F5F\u70B8", trumpDesc: "\u5F9E\u7A7A\u4E2D\u653B\u64CA", facts: ["\u7FFC\u5C557\u7C73\u4F46\u9AD4\u91CD\u50C525\u516C\u65A4", "\u4E0D\u662F\u6050\u9F8D\u2014\u2014\u662F\u98DB\u884C\u722C\u87F2\u985E", "\u6C92\u6709\u7259\u9F52\u2014\u2014\u7528\u5582\u50CF\u9D58\u9E1C\u4E00\u6A23\u820D\u53D6\u9B5A\u985E"] },
+      "quetzalcoatlus_001": { name: "\u98CE\u795E\u7FFC\u9F8D", trump: "\u5929\u7A7A\u5DE8\u4EBA", trumpDesc: "\u53F2\u4E0A\u6700\u5927\u7684\u98DB\u884C\u52D5\u7269", facts: ["\u50CF\u9577\u9838\u9E7F\u4E00\u6A23\u9AD8\uFF0C\u7FC0\u5C5511\u7C73", "\u80FD\u4EE5\u6642\u901F128\u516C\u91CC\u98DB\u884C\u6578\u5343\u516C\u91CC", "\u4EE5\u963F\u8332\u7279\u514B\u7FBD\u86C7\u795E\u547D\u540D"] },
+      "megalosaurus_001": { name: "\u65A5\u9F8D", trump: "\u7B2C\u4E00\u7375\u624B", trumpDesc: "\u7B2C\u4E00\u96BB\u88AB\u767C\u73FE\u7684\u6050\u9F8D", facts: ["\u7B2C\u4E00\u96BB\u88AB\u79D1\u5B78\u547D\u540D\u7684\u6050\u9F8D\uFF0C1824\u5E74", "\u6700\u521D\u88AB\u8A8D\u70BA\u662F\u5DE8\u578B\u8725\u87F4\uFF0C\u4E0D\u662F\u6050\u9F8D", "\u5728\u4E00\u5104\u516D\u5343\u516D\u767E\u842C\u5E74\u524D\u6F2B\u904A\u82F1\u683C\u862D"] }
+    };
+
+    // Helper: get translated animal field
+    function animalT(animal, field, lang) {
+      if (lang === "en" || !lang) {
+        if (field === "name") return animal.name;
+        if (field === "trumpName") return animal.trump.name;
+        if (field === "trumpDesc") return animal.trump.desc;
+        if (field === "facts") return animal.facts;
+      }
+      var zh = ANIMAL_ZH[animal.id];
+      if (!zh) {
+        if (field === "name") return animal.name;
+        if (field === "trumpName") return animal.trump.name;
+        if (field === "trumpDesc") return animal.trump.desc;
+        if (field === "facts") return animal.facts;
+      }
+      if (field === "name") return zh.name || animal.name;
+      if (field === "trumpName") return zh.trump || animal.trump.name;
+      if (field === "trumpDesc") return zh.trumpDesc || animal.trump.desc;
+      if (field === "facts") return zh.facts || animal.facts;
+      return animal[field];
+    }
+
     // ==================== SUPABASE ====================
     var SUPABASE_URL = 'https://mteintczrnpylwxnohvw.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10ZWludGN6cm5weWx3eG5vaHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMjg4NjQsImV4cCI6MjA4NjgwNDg2NH0.V0oRv6nvfnPB1fC7tAh9rcwgA5m28iIXj9DjVGUdEu0';
@@ -672,23 +922,24 @@
     }
 
     function Header(props) {
+      var t = props.t;
       return e("div", null,
         e("div", { className: "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-4 py-3 border-b border-gray-700/50" },
           e("div", { className: "max-w-lg mx-auto flex items-center justify-between" },
             e("div", null,
               e("h1", { className: "text-lg font-black tracking-tight" },
-                e("span", { className: "text-orange-400" }, "ANIMAL"),
-                e("span", { className: "text-white" }, " FACEOFF")
+                e("span", { className: "text-orange-400" }, t.title1),
+                e("span", { className: "text-white" }, t.title2)
               )
             ),
             e("div", { className: "flex items-center gap-4 text-sm" },
               props.streak >= 3 ? e("span", { className: "streak-fire font-bold text-orange-400" }, "\uD83D\uDD25" + props.streak) : null,
               e("div", { className: "text-center" },
-                e("div", { className: "text-gray-400 text-xs" }, "SCORE"),
+                e("div", { className: "text-gray-400 text-xs" }, t.scoreLabel),
                 e("div", { className: "font-bold text-orange-400" }, props.score)
               ),
               e("div", { className: "text-center" },
-                e("div", { className: "text-gray-400 text-xs" }, "ROUND"),
+                e("div", { className: "text-gray-400 text-xs" }, t.roundLabel),
                 e("div", { className: "font-bold" }, props.round + "/" + TOURNAMENT_ROUNDS)
               ),
               e("button", { onClick: props.onLeaderboard, className: "p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 active:scale-95 transition-all" }, "\uD83C\uDFC6")
@@ -704,6 +955,7 @@
 
     function AnimalCard(props) {
       var animal = props.animal, side = props.side, disabled = props.disabled, result = props.result, isWinner = props.isWinner, isLoser = props.isLoser;
+      var t = props.t, lang = props.lang;
       var cardClass = "animal-card relative flex flex-col items-center pt-6 sm:pt-8 p-3 sm:p-4 rounded-2xl ";
       var animClass = side === "left" ? "slide-in-left" : "slide-in-right";
       if (result) {
@@ -712,45 +964,49 @@
       } else {
         cardClass += "bg-gradient-to-b from-gray-800/80 to-gray-700/40 border-2 border-gray-600/30 hover:border-orange-400/50 glow-pulse ";
       }
+      var translatedFacts = animalT(animal, "facts", lang);
       // Pick a stable random fact per matchup
-      var factRef = React.useMemo(function() {
+      var factIdx = React.useMemo(function() {
         if (animal.facts && animal.facts.length > 0) {
-          return animal.facts[Math.floor(Math.random() * animal.facts.length)];
+          return Math.floor(Math.random() * animal.facts.length);
         }
-        return null;
+        return -1;
       }, [animal.id]);
+      var factText = factIdx >= 0 && translatedFacts && translatedFacts[factIdx] ? translatedFacts[factIdx] : null;
       return e("button", {
         onClick: function() { if (!disabled) props.onSelect(animal); },
         disabled: disabled,
         className: cardClass + " " + animClass + " flex-1"
       },
-        isWinner && result ? e("div", { className: "absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10" }, "WINNER!") : null,
+        isWinner && result ? e("div", { className: "absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10" }, t.winnerBadge) : null,
         e("div", { className: "mb-2" }, e(AnimalAvatar, { animal: animal, size: "large" })),
-        e("div", { className: "text-base sm:text-lg font-bold text-center leading-tight truncate w-full" }, animal.name),
+        e("div", { className: "text-base sm:text-lg font-bold text-center leading-tight truncate w-full" }, animalT(animal, "name", lang)),
         e("div", { className: "mt-1 px-1 overflow-hidden text-center fact-box" },
-          factRef ? e("div", { className: "text-xs text-gray-400 leading-snug italic line-clamp-4" }, "\"\u2009" + factRef + "\u2009\"") : null
+          factText ? e("div", { className: "text-xs text-gray-400 leading-snug italic line-clamp-4" }, "\"\u2009" + factText + "\u2009\"") : null
         ),
-        !result && !disabled ? e("div", { className: "mt-1 text-xs text-orange-400/80 font-medium" }, "TAP TO SELECT") : null
+        !result && !disabled ? e("div", { className: "mt-1 text-xs text-orange-400/80 font-medium" }, t.tapToSelect) : null
       );
     }
 
     function ResultModal(props) {
       if (!props.matchup || !props.winner) return null;
+      var t = props.t, lang = props.lang;
       var left = props.matchup.left, right = props.matchup.right;
       var isCorrect = props.isCorrect;
       var isFinalRound = props.round >= TOURNAMENT_ROUNDS;
       var fs = props.fightScores || { left: left.fightScore, right: right.fightScore };
       var leftWon = props.winner.id === left.id;
       var trump = props.trumpCard;
+      var winnerName = animalT(props.winner, "name", lang);
       return e("div", { className: "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-30 p-4 fade-in" },
         e("div", { className: "bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[85vh] overflow-y-auto" },
           e("div", { className: "p-5 text-center rounded-t-2xl " + (isCorrect ? "bg-gradient-to-b from-green-900/50 to-transparent" : "bg-gradient-to-b from-red-900/50 to-transparent") },
             e("div", { className: "text-4xl mb-2" }, isCorrect ? "\uD83C\uDF89" : "\uD83D\uDE14"),
-            e("div", { className: "text-xl font-black " + (isCorrect ? "text-green-400" : "text-red-400") }, isCorrect ? "CORRECT!" : "WRONG!"),
-            e("div", { className: "text-gray-400 text-sm mt-1" }, props.winner.name + " wins this round!"),
-            isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + " streak! +" + props.points + " pts") : null,
+            e("div", { className: "text-xl font-black " + (isCorrect ? "text-green-400" : "text-red-400") }, isCorrect ? t.correct : t.wrong),
+            e("div", { className: "text-gray-400 text-sm mt-1" }, winnerName + t.winsThisRound),
+            isCorrect && props.streak >= 3 ? e("div", { className: "mt-2 text-orange-400 font-bold streak-fire" }, "\uD83D\uDD25 " + props.streak + t.streakText + props.points + t.pts) : null,
             trump ? e("div", { className: "mt-2 trump-flash inline-block bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-400/40 rounded-full px-4 py-1.5" },
-              e("span", { className: "text-purple-300 text-xs font-bold" }, "\u26A1 Special Trait - " + trump.animal.name + " \u2014 " + trump.trump.name + " "),
+              e("span", { className: "text-purple-300 text-xs font-bold" }, t.specialTrait + animalT(trump.animal, "name", lang) + " \u2014 " + animalT(trump.animal, "trumpName", lang) + " "),
               e("span", { className: "text-purple-400/70 text-xs" }, "(+" + trump.trump.bonus + ")")
             ) : null
           ),
@@ -758,24 +1014,24 @@
             e("div", { className: "flex items-center justify-evenly mb-3" },
               e("div", { className: "text-center" },
                 e("div", { className: "flex justify-center" }, e(AnimalAvatar, { animal: left })),
-                e("div", { className: "text-sm font-bold mt-1" }, left.name),
-                e("div", { className: "text-xs font-bold mt-1 " + (leftWon ? "text-green-400" : "text-red-400") }, "Fight: " + fs.left)
+                e("div", { className: "text-sm font-bold mt-1" }, animalT(left, "name", lang)),
+                e("div", { className: "text-xs font-bold mt-1 " + (leftWon ? "text-green-400" : "text-red-400") }, t.fight + fs.left)
               ),
-              e("div", { className: "text-gray-500 text-xs font-bold px-2" }, "VS"),
+              e("div", { className: "text-gray-500 text-xs font-bold px-2" }, t.vs),
               e("div", { className: "text-center" },
                 e("div", { className: "flex justify-center" }, e(AnimalAvatar, { animal: right })),
-                e("div", { className: "text-sm font-bold mt-1" }, right.name),
-                e("div", { className: "text-xs font-bold mt-1 " + (!leftWon ? "text-green-400" : "text-red-400") }, "Fight: " + fs.right)
+                e("div", { className: "text-sm font-bold mt-1" }, animalT(right, "name", lang)),
+                e("div", { className: "text-xs font-bold mt-1 " + (!leftWon ? "text-green-400" : "text-red-400") }, t.fight + fs.right)
               )
             ),
-            e(StatBar, { label: "Strength", value1: left.stats.strength, value2: right.stats.strength, delay: 1, showResult: true }),
-            e(StatBar, { label: "Speed", value1: left.stats.speed, value2: right.stats.speed, delay: 2, showResult: true }),
-            e(StatBar, { label: "Defense", value1: left.stats.defense, value2: right.stats.defense, delay: 3, showResult: true }),
-            e(StatBar, { label: "Aggression", value1: left.stats.aggression, value2: right.stats.aggression, delay: 4, showResult: true })
+            e(StatBar, { label: t.strength, value1: left.stats.strength, value2: right.stats.strength, delay: 1, showResult: true }),
+            e(StatBar, { label: t.speed, value1: left.stats.speed, value2: right.stats.speed, delay: 2, showResult: true }),
+            e(StatBar, { label: t.defense, value1: left.stats.defense, value2: right.stats.defense, delay: 3, showResult: true }),
+            e(StatBar, { label: t.aggression, value1: left.stats.aggression, value2: right.stats.aggression, delay: 4, showResult: true })
           ),
           e("div", { className: "px-5 pb-5" },
             e("button", { onClick: props.onNext, className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-transform shadow-lg shadow-orange-500/20" },
-              isFinalRound ? "FINISH TOURNAMENT \uD83C\uDFC6" : "NEXT ROUND \u27A1\uFE0F"
+              isFinalRound ? t.finishTournament : t.nextRound
             )
           )
         )
@@ -783,7 +1039,7 @@
     }
 
     function LeaderboardRow(props) {
-      var entry = props.entry, rank = props.rank, isUser = props.isUser;
+      var entry = props.entry, rank = props.rank, isUser = props.isUser, t = props.t;
       var medals = ["\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"];
       return e("div", {
         className: "flex items-center justify-between p-3 rounded-xl " + (isUser ? "bg-orange-500/10 border border-orange-500/30" : "bg-gray-800/50")
@@ -792,13 +1048,14 @@
           e("span", { className: "text-lg w-8 text-center" },
             rank <= 3 ? medals[rank - 1] : e("span", { className: "text-gray-500 text-sm font-bold" }, "#" + rank)
           ),
-          e("span", { className: "font-semibold " + (isUser ? "text-orange-400" : "") }, entry.name + (isUser ? " (you)" : ""))
+          e("span", { className: "font-semibold " + (isUser ? "text-orange-400" : "") }, entry.name + (isUser ? t.you : ""))
         ),
         e("span", { className: "font-bold text-lg" }, entry.score)
       );
     }
 
     function LeaderboardModal(props) {
+      var t = props.t;
       var entries = props.entries, userName = props.userName, isGlobal = props.source === "global";
       var pRank = props.playerRank;
       var pEntry = props.playerEntry;
@@ -808,23 +1065,23 @@
         e("div", { className: "bg-gray-900 rounded-2xl w-full max-w-lg border border-gray-700 shadow-2xl fade-in-up max-h-[80vh] overflow-y-auto" },
           e("div", { className: "p-5 text-center border-b border-gray-700/50" },
             e("div", { className: "text-3xl mb-2" }, "\uD83C\uDFC6"),
-            e("h2", { className: "text-xl font-black" }, "LEADERBOARD"),
+            e("h2", { className: "text-xl font-black" }, t.leaderboardTitle),
             e("div", { className: "inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold " + (isGlobal ? "bg-green-500/20 text-green-400" : "bg-gray-700 text-gray-400") },
-              isGlobal ? "\uD83C\uDF10 GLOBAL" : "\uD83D\uDCF1 THIS DEVICE"
+              isGlobal ? t.global : t.thisDevice
             ),
-            pRank && isGlobal ? e("div", { className: "text-sm text-gray-400 mt-1" }, "Your rank: #" + pRank) : null
+            pRank && isGlobal ? e("div", { className: "text-sm text-gray-400 mt-1" }, t.yourRank + pRank) : null
           ),
           e("div", { className: "p-4" },
             entries.length === 0 ?
               e("div", { className: "text-center text-gray-500 py-8" },
                 e("div", { className: "text-4xl mb-3" }, "\uD83C\uDFAE"),
-                e("div", null, "No scores yet!"),
-                e("div", { className: "text-sm mt-1" }, "Complete a tournament to get on the board")
+                e("div", null, t.noScores),
+                e("div", { className: "text-sm mt-1" }, t.completeToBoard)
               ) :
               e("div", { className: "space-y-2" },
                 entries.map(function(entry, i) {
                   var isUser = entry.name === userName;
-                  return e(LeaderboardRow, { key: i, entry: entry, rank: i + 1, isUser: isUser });
+                  return e(LeaderboardRow, { key: i, entry: entry, rank: i + 1, isUser: isUser, t: t });
                 }),
                 // Show divider + player row if they're not in top 10
                 isGlobal && !playerInTop && pEntry && pRank ? [
@@ -833,18 +1090,19 @@
                     e("span", { className: "text-gray-500 text-xs" }, "\u2022 \u2022 \u2022"),
                     e("div", { className: "flex-1 border-t border-gray-700" })
                   ),
-                  e(LeaderboardRow, { key: "player", entry: pEntry, rank: pRank, isUser: true })
+                  e(LeaderboardRow, { key: "player", entry: pEntry, rank: pRank, isUser: true, t: t })
                 ] : null
               )
           ),
           e("div", { className: "px-5 pb-5" },
-            e("button", { onClick: props.onClose, className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all" }, "BACK TO GAME")
+            e("button", { onClick: props.onClose, className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all" }, t.backToGame)
           )
         )
       );
     }
 
     function NameEntry(props) {
+      var t = props.t;
       var ref = useState(""), name = ref[0], setName = ref[1];
       var errRef = useState(""), error = errRef[0], setError = errRef[1];
       var chkRef = useState(false), checking = chkRef[0], setChecking = chkRef[1];
@@ -867,8 +1125,8 @@
 
       function handleSubmit() {
         var trimmed = name.trim();
-        if (trimmed.length < 3) { setError("Name must be at least 3 characters"); return; }
-        if (trimmed.length > 20) { setError("Name must be 20 characters or less"); return; }
+        if (trimmed.length < 3) { setError(t.nameMinErr); return; }
+        if (trimmed.length > 20) { setError(t.nameMaxErr); return; }
         setChecking(true);
         setError("");
         checkNameAvailable(trimmed).then(function(available) {
@@ -876,7 +1134,7 @@
           if (available) {
             props.onSubmit(trimmed);
           } else {
-            setError("Name taken, try another!");
+            setError(t.nameTakenErr);
           }
         });
       }
@@ -885,17 +1143,17 @@
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
           e("div", { className: "text-6xl mb-4" }, "\uD83E\uDD81"),
           e("h1", { className: "text-3xl font-black mb-2" },
-            e("span", { className: "text-orange-400" }, "ANIMAL"),
-            e("span", { className: "text-white" }, " FACEOFF")
+            e("span", { className: "text-orange-400" }, t.title1),
+            e("span", { className: "text-white" }, t.title2)
           ),
-          e("p", { className: "text-gray-400 mb-6" }, "Predict the winner of epic animal battles!"),
-          e("label", { className: "text-sm text-gray-400 block mb-2" }, "Choose your battle name:"),
+          e("p", { className: "text-gray-400 mb-6" }, t.subtitle),
+          e("label", { className: "text-sm text-gray-400 block mb-2" }, t.nameLabel),
           e("input", {
             type: "text",
             value: name,
             onChange: handleChange,
             onKeyDown: function(ev) { if (ev.key === "Enter" && name.trim().length >= 3) handleSubmit(); },
-            placeholder: "Type a name...",
+            placeholder: t.namePlaceholder,
             maxLength: 20,
             className: "w-full bg-gray-800 border-2 border-gray-600 focus:border-orange-400 rounded-xl px-4 py-4 text-center text-orange-400 text-xl font-black placeholder-gray-600 outline-none transition-colors"
           }),
@@ -907,30 +1165,37 @@
               className: "text-gray-400 hover:text-orange-400 transition-colors text-sm inline-flex items-center gap-1 disabled:opacity-30"
             },
               e("span", { className: "text-base" + (rolling ? " animate-spin" : "") }, "\uD83C\uDFB2"),
-              " Random"
+              " " + t.random
             )
           ),
           e("button", {
             onClick: handleSubmit, disabled: checking || rolling || name.trim().length < 3,
             className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all shadow-lg shadow-orange-500/20"
-          }, checking ? "CHECKING..." : "LET'S GO! \uD83D\uDD25")
+          }, checking ? t.checking : t.letsGo),
+          // Language toggle
+          e("button", {
+            onClick: props.onToggleLang,
+            className: "mt-4 text-gray-500 hover:text-orange-400 transition-colors text-sm font-medium"
+          }, props.lang === "en" ? "\uD83C\uDDF9\uD83C\uDDFC \u7E41\u9AD4\u4E2D\u6587" : "\uD83C\uDDEC\uD83C\uDDE7 English")
         )
       );
     }
 
     function ClassSelect(props) {
+      var t = props.t, lang = props.lang;
       var classes = Object.keys(WEIGHT_CLASSES);
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
           e("div", { className: "text-6xl mb-4" }, "\u2694\uFE0F"),
           e("h1", { className: "text-3xl font-black mb-2" },
-            e("span", { className: "text-orange-400" }, "CHOOSE YOUR"),
-            e("span", { className: "text-white" }, " DIVISION")
+            e("span", { className: "text-orange-400" }, t.chooseDivision1),
+            e("span", { className: "text-white" }, t.chooseDivision2)
           ),
-          e("p", { className: "text-gray-400 mb-6" }, "Each division has its own set of animals"),
+          e("p", { className: "text-gray-400 mb-6" }, t.eachDivision),
           e("div", { className: "space-y-3" },
             classes.map(function(key) {
               var wc = WEIGHT_CLASSES[key];
+              var wcT = t.wcLabels[key] || { label: wc.label, desc: wc.desc };
               return e("button", {
                 key: key,
                 onClick: function() { props.onSelect(key); },
@@ -939,9 +1204,9 @@
                 e("div", { className: "flex items-center gap-3" },
                   e("span", { className: "text-3xl" }, wc.emoji),
                   e("div", null,
-                    e("div", { className: "font-bold text-lg text-white" }, wc.label),
-                    e("div", { className: "text-xs text-gray-400" }, wc.desc),
-                    e("div", { className: "text-xs text-orange-400/70 mt-1" }, getAnimalsByClass(key).length + " animals")
+                    e("div", { className: "font-bold text-lg text-white" }, wcT.label),
+                    e("div", { className: "text-xs text-gray-400" }, wcT.desc),
+                    e("div", { className: "text-xs text-orange-400/70 mt-1" }, getAnimalsByClass(key).length + " " + t.animals)
                   )
                 )
               );
@@ -951,38 +1216,40 @@
             e("button", {
               onClick: props.onLeaderboard,
               className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
-            }, "VIEW LEADERBOARD \uD83C\uDFC6")
+            }, t.viewLeaderboard)
           )
         )
       );
     }
 
     function TournamentReady(props) {
+      var t = props.t;
+      var wcT = t.wcLabels[props.weightClass] || {};
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
         e("div", { className: "text-center fade-in-up w-full max-w-sm" },
           e("div", { className: "text-6xl mb-4" }, "\u2694\uFE0F"),
           e("h1", { className: "text-3xl font-black mb-2" },
-            e("span", { className: "text-orange-400" }, "TOURNAMENT"),
-            e("span", { className: "text-white" }, " MODE")
+            e("span", { className: "text-orange-400" }, t.tournament1),
+            e("span", { className: "text-white" }, t.tournament2)
           ),
           e("p", { className: "text-gray-400 mb-2" },
-            "Welcome, " + props.playerName + "! ",
-            e("button", { onClick: props.onChangeName, className: "text-orange-400 underline text-sm" }, "Not you?")
+            t.welcome + props.playerName + "! ",
+            e("button", { onClick: props.onChangeName, className: "text-orange-400 underline text-sm" }, t.notYou)
           ),
           props.weightClass && WEIGHT_CLASSES[props.weightClass] ? e("div", { className: "inline-block mb-3 px-4 py-1 rounded-full bg-orange-500/20 text-orange-400 text-sm font-bold" },
-            WEIGHT_CLASSES[props.weightClass].emoji + " " + WEIGHT_CLASSES[props.weightClass].label + " Division"
+            WEIGHT_CLASSES[props.weightClass].emoji + " " + wcT.label + " " + t.division
           ) : null,
-          e("p", { className: "text-gray-500 text-sm mb-4" }, TOURNAMENT_ROUNDS + " rounds \u2022 No repeated matchups \u2022 Trump cards enabled!"),
-          e("button", { onClick: props.onChangeClass, className: "text-gray-500 hover:text-orange-400 text-xs mb-6 underline transition-colors" }, "Change division"),
+          e("p", { className: "text-gray-500 text-sm mb-4" }, TOURNAMENT_ROUNDS + t.roundsInfo),
+          e("button", { onClick: props.onChangeClass, className: "text-gray-500 hover:text-orange-400 text-xs mb-6 underline transition-colors" }, t.changeDivision),
           e("div", { className: "space-y-3" },
             e("button", {
               onClick: props.onStart,
               className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-orange-500/20"
-            }, "START TOURNAMENT \u2694\uFE0F"),
+            }, t.startTournament),
             e("button", {
               onClick: props.onLeaderboard,
               className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
-            }, "VIEW LEADERBOARD \uD83C\uDFC6")
+            }, t.viewLeaderboard)
           )
         )
       );
@@ -995,12 +1262,13 @@
     }
 
     function TournamentEnd(props) {
+      var t = props.t, lang = props.lang;
       var pct = Math.round((props.roundsCorrect / TOURNAMENT_ROUNDS) * 100);
       var grade;
-      if (pct >= 90) grade = { label: "LEGENDARY", color: "text-yellow-400", emoji: "\uD83C\uDFC6" };
-      else if (pct >= 70) grade = { label: "EXCELLENT", color: "text-green-400", emoji: "\uD83C\uDF1F" };
-      else if (pct >= 50) grade = { label: "GOOD", color: "text-blue-400", emoji: "\uD83D\uDC4D" };
-      else grade = { label: "KEEP TRYING", color: "text-gray-400", emoji: "\uD83D\uDCAA" };
+      if (pct >= 90) grade = { label: t.legendary, color: "text-yellow-400", emoji: "\uD83C\uDFC6" };
+      else if (pct >= 70) grade = { label: t.excellent, color: "text-green-400", emoji: "\uD83C\uDF1F" };
+      else if (pct >= 50) grade = { label: t.good, color: "text-blue-400", emoji: "\uD83D\uDC4D" };
+      else grade = { label: t.keepTrying, color: "text-gray-400", emoji: "\uD83D\uDCAA" };
 
       var timeStr = props.timeSeconds ? formatTime(props.timeSeconds) : null;
       var copiedRef = useState(false), copied = copiedRef[0], setCopied = copiedRef[1];
@@ -1015,13 +1283,14 @@
         });
       }, [props.playerName]);
 
-      var divLabel = props.weightClass && WEIGHT_CLASSES[props.weightClass] ? WEIGHT_CLASSES[props.weightClass].label : "";
+      var wcT = t.wcLabels[props.weightClass] || {};
+      var divLabel = wcT.label || "";
       var combinedScore = profile ? (profile.score || 0) : props.score;
 
       function handleShare() {
-        var shareText = "\uD83E\uDD81\u2694\uFE0F Animal Faceoff — " + divLabel + " Division\n\uD83C\uDFAF " + props.score + " pts (" + pct + "% accuracy" + (timeStr ? ", " + timeStr : "") + ")\n\uD83C\uDFC6 Leaderboard: " + combinedScore + "\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+        var shareText = t.shareText(divLabel, props.score, pct, timeStr, combinedScore);
         if (navigator.share) {
-          navigator.share({ title: "Animal Faceoff", text: shareText }).catch(function() {});
+          navigator.share({ title: lang === "en" ? "Animal Faceoff" : "\u52D5\u7269\u5C0D\u6C7A", text: shareText }).catch(function() {});
         } else {
           navigator.clipboard.writeText(shareText).then(function() {
             setCopied(true);
@@ -1034,39 +1303,39 @@
         e("div", { className: "text-center fade-in-up w-full max-w-sm my-auto" },
           e("div", { className: "text-5xl mb-3" }, grade.emoji),
           e("h1", { className: "text-2xl font-black mb-1 " + grade.color }, grade.label),
-          e("p", { className: "text-gray-400 mb-1 text-sm" }, "Tournament Complete!"),
+          e("p", { className: "text-gray-400 mb-1 text-sm" }, t.tournamentComplete),
           divLabel ? e("div", { className: "inline-block mb-4 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-bold" },
-            (WEIGHT_CLASSES[props.weightClass] ? WEIGHT_CLASSES[props.weightClass].emoji + " " : "") + divLabel + " Division"
+            (WEIGHT_CLASSES[props.weightClass] ? WEIGHT_CLASSES[props.weightClass].emoji + " " : "") + divLabel + " " + t.division
           ) : e("div", { className: "mb-4" }),
 
           // This run stats
           e("div", { className: "grid grid-cols-2 gap-2 mb-2" },
             e("div", { className: "bg-gray-800/60 rounded-xl p-3" },
               e("div", { className: "text-2xl font-black text-orange-400" }, props.score),
-              e("div", { className: "text-xs text-gray-400 uppercase" }, "Score")
+              e("div", { className: "text-xs text-gray-400 uppercase" }, t.scoreStatLabel)
             ),
             e("div", { className: "bg-gray-800/60 rounded-xl p-3" },
               e("div", { className: "text-2xl font-black text-green-400" }, props.roundsCorrect + "/" + TOURNAMENT_ROUNDS),
-              e("div", { className: "text-xs text-gray-400 uppercase" }, "Correct")
+              e("div", { className: "text-xs text-gray-400 uppercase" }, t.correctStatLabel)
             ),
             e("div", { className: "bg-gray-800/60 rounded-xl p-3" },
               e("div", { className: "text-2xl font-black text-orange-400" }, props.bestStreak),
-              e("div", { className: "text-xs text-gray-400 uppercase" }, "Best Streak")
+              e("div", { className: "text-xs text-gray-400 uppercase" }, t.bestStreakLabel)
             ),
             e("div", { className: "bg-gray-800/60 rounded-xl p-3" },
               e("div", { className: "text-2xl font-black text-blue-400" }, pct + "%"),
-              e("div", { className: "text-xs text-gray-400 uppercase" }, "Accuracy")
+              e("div", { className: "text-xs text-gray-400 uppercase" }, t.accuracyLabel)
             )
           ),
           timeStr ? e("div", { className: "bg-gray-800/60 rounded-xl p-2 mb-3 flex items-center justify-center gap-2" },
             e("span", { className: "text-gray-400 text-sm" }, "\u23F1\uFE0F"),
             e("span", { className: "text-white font-bold text-sm" }, timeStr),
-            e("span", { className: "text-xs text-gray-500" }, "total time")
+            e("span", { className: "text-xs text-gray-500" }, t.totalTime)
           ) : e("div", { className: "mb-3" }),
 
           // Combined leaderboard score
           e("div", { className: "bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-400/30 rounded-xl p-4 mb-4" },
-            e("div", { className: "text-xs text-gray-400 mb-1" }, "Combination of your best scores across all divisions"),
+            e("div", { className: "text-xs text-gray-400 mb-1" }, t.combinedScoreDesc),
             e("div", { className: "text-3xl font-black text-orange-400" }, profileLoaded ? combinedScore : "..."),
           ),
 
@@ -1074,15 +1343,15 @@
             e("button", {
               onClick: handleShare,
               className: "w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-green-500/20"
-            }, copied ? "COPIED! \u2705" : "SHARE \uD83D\uDCE4"),
+            }, copied ? t.copied : t.share),
             e("button", {
               onClick: props.onLeaderboard,
               className: "w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg active:scale-95 transition-all shadow-lg shadow-orange-500/20"
-            }, "VIEW LEADERBOARD \uD83C\uDFC6"),
+            }, t.viewLeaderboard),
             e("button", {
               onClick: props.onPlayAgain,
               className: "w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl active:scale-95 transition-all"
-            }, "PLAY AGAIN \uD83D\uDD01")
+            }, t.playAgain)
           )
         )
       );
@@ -1117,6 +1386,13 @@
       var ttRef = useState(null), tournamentStart = ttRef[0], setTournamentStart = ttRef[1];
       var tdRef = useState(0), tournamentTime = tdRef[0], setTournamentTime = tdRef[1];
       var prevGameStateRef = useRef("loading");
+      var lgRef = useState(loadLang), lang = lgRef[0], setLang = lgRef[1];
+      var t = T[lang] || T.en;
+      function toggleLang() {
+        var next = lang === "en" ? "zh-TW" : "en";
+        setLang(next);
+        saveLang(next);
+      }
 
       // Initialize
       useEffect(function() {
@@ -1279,16 +1555,16 @@
       // Loading
       if (gameState === "loading") {
         return e("div", { className: "min-h-screen flex items-center justify-center" },
-          e("div", { className: "text-2xl font-bold text-orange-400 animate-pulse" }, "Loading...")
+          e("div", { className: "text-2xl font-bold text-orange-400 animate-pulse" }, t.loading)
         );
       }
 
       // Name entry
-      if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit });
+      if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit, t: t, lang: lang, onToggleLang: toggleLang });
 
       // Class select
       if (gameState === "class_select") {
-        return e(ClassSelect, { onSelect: handleClassSelect, onLeaderboard: handleShowLeaderboard });
+        return e(ClassSelect, { onSelect: handleClassSelect, onLeaderboard: handleShowLeaderboard, t: t, lang: lang });
       }
 
       // Tournament ready
@@ -1299,7 +1575,8 @@
           onStart: handleStartTournament,
           onLeaderboard: handleShowLeaderboard,
           onChangeName: function() { setUserName(""); saveSession({}); setGameState("name_entry"); },
-          onChangeClass: function() { setGameState("class_select"); }
+          onChangeClass: function() { setGameState("class_select"); },
+          t: t, lang: lang
         });
       }
 
@@ -1308,65 +1585,72 @@
         return e(TournamentEnd, {
           score: score, roundsCorrect: roundsCorrect, bestStreak: bestStreak,
           timeSeconds: tournamentTime, weightClass: weightClass, playerName: userName,
-          onPlayAgain: handlePlayAgain, onLeaderboard: handleShowLeaderboard
+          onPlayAgain: handlePlayAgain, onLeaderboard: handleShowLeaderboard,
+          t: t, lang: lang
         });
       }
 
       // Leaderboard (standalone, from tournament_ready or tournament_end)
       if (gameState === "leaderboard") {
-        return e(LeaderboardModal, { entries: leaderboard, userName: userName, source: leaderboardSource, playerRank: playerRank, playerEntry: playerEntry, onClose: handleCloseLeaderboard });
+        return e(LeaderboardModal, { entries: leaderboard, userName: userName, source: leaderboardSource, playerRank: playerRank, playerEntry: playerEntry, onClose: handleCloseLeaderboard, t: t });
       }
 
       var isCorrect = selectedAnimal && winner && selectedAnimal.id === winner.id;
+      var wcT = t.wcLabels[weightClass] || {};
 
       // Main game (playing / selected / result)
       return e("div", { className: "min-h-screen flex flex-col bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950" },
-        e(Header, { score: score, round: round, streak: streak, onLeaderboard: handleShowLeaderboard }),
+        e(Header, { score: score, round: round, streak: streak, onLeaderboard: handleShowLeaderboard, t: t }),
         e("div", { className: "flex-1 flex flex-col items-center pt-3 sm:pt-4 px-4 sm:px-6" },
           e("div", { className: "w-full max-w-lg" },
             e("div", { className: "text-center mb-2 fade-in" },
-              e("div", { className: "text-sm text-gray-400 uppercase tracking-widest font-semibold" }, "Who Would Win?")
+              e("div", { className: "text-sm text-gray-400 uppercase tracking-widest font-semibold" }, t.whoWouldWin)
             ),
             currentMatchup ? e("div", { className: "relative flex items-start gap-0", key: animKey },
-              e(AnimalCard, { animal: currentMatchup.left, onSelect: handleAnimalSelect, side: "left", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.left.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.left.id }),
+              e(AnimalCard, { animal: currentMatchup.left, onSelect: handleAnimalSelect, side: "left", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.left.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.left.id, t: t, lang: lang }),
               e("div", { className: "flex-shrink-0 z-10 vs-pop -mx-5", style: { marginTop: "calc(2rem + 2rem)" } },
                 e("div", { className: "w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 border-2 border-orange-300/30" },
-                  e("span", { className: "text-white font-black text-sm sm:text-base" }, "VS")
+                  e("span", { className: "text-white font-black text-sm sm:text-base" }, t.vs)
                 )
               ),
               e(LightningBolt, { visible: showLightning }),
-              e(AnimalCard, { animal: currentMatchup.right, onSelect: handleAnimalSelect, side: "right", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.right.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.right.id })
+              e(AnimalCard, { animal: currentMatchup.right, onSelect: handleAnimalSelect, side: "right", disabled: gameState !== "playing", result: gameState === "result", isWinner: gameState === "result" && winner && winner.id === currentMatchup.right.id, isLoser: gameState === "result" && winner && winner.id !== currentMatchup.right.id, t: t, lang: lang })
             ) : null,
             streak >= 3 && gameState === "playing" ? e("div", { className: "text-center mt-2 fade-in" },
-              e("span", { className: "text-orange-400 font-bold streak-fire text-sm" }, "\uD83D\uDD25 " + streak + " correct in a row!")
+              e("span", { className: "text-orange-400 font-bold streak-fire text-sm" }, "\uD83D\uDD25 " + streak + (lang === "en" ? " correct in a row!" : " \u9023\u52DD\uFF01"))
             ) : null,
             // How scoring works - ? icon
             e("div", { className: "text-center mt-2" },
               e("button", { onClick: function() { setShowInfo(!showInfo); }, className: "text-gray-500 hover:text-gray-300 transition-colors inline-flex items-center gap-1 text-xs" },
                 e("span", { className: "w-5 h-5 rounded-full border border-gray-500 inline-flex items-center justify-center text-xs font-bold" }, "?"),
-                e("span", null, "How does scoring work?")
+                e("span", null, t.howScoring)
               ),
               showInfo ? e("div", { className: "mt-2 bg-gray-800/90 rounded-xl p-4 text-left text-xs text-gray-300 border border-gray-700 fade-in" },
-                e("p", { className: "font-bold text-orange-400 mb-2" }, "How each round works:"),
-                e("p", { className: "mb-1" }, "Every animal has 4 stats: Strength, Speed, Defense, and Aggression. These add up to a base power score."),
-                e("p", { className: "mb-1" }, "Each round, both animals get a small random boost or penalty (\u00B15%) to keep things exciting. So a slightly weaker animal can still pull off an upset!"),
-                e("p", { className: "mb-1" }, "\u26A1 Trump Cards: Each animal has a special ability with a 30% chance of activating per round. When triggered, it gives a bonus point boost!"),
-                e("p", { className: "mb-1" }, "You get 10 points for each correct pick. Land 5 in a row? Bonus 5 points!"),
-                e("p", { className: "text-gray-500 mt-2" }, "Tip: The stronger animal usually wins, but trump cards can flip anything!")
+                e("p", { className: "font-bold text-orange-400 mb-2" }, t.infoTitle),
+                e("p", { className: "mb-1" }, t.info1),
+                e("p", { className: "mb-1" }, t.info2),
+                e("p", { className: "mb-1" }, t.info3),
+                e("p", { className: "mb-1" }, t.info4),
+                e("p", { className: "text-gray-500 mt-2" }, t.infoTip)
               ) : null
             )
           )
         ),
         e("div", { className: "text-center py-3 text-gray-500 text-xs" },
-          weightClass && WEIGHT_CLASSES[weightClass] ? e("span", { className: "text-gray-600" }, WEIGHT_CLASSES[weightClass].emoji + " " + WEIGHT_CLASSES[weightClass].label + " \u2022 ") : null,
-          e("span", null, "Playing as "),
+          weightClass && WEIGHT_CLASSES[weightClass] ? e("span", { className: "text-gray-600" }, WEIGHT_CLASSES[weightClass].emoji + " " + (wcT.label || "") + " \u2022 ") : null,
+          e("span", null, t.playingAs),
           e("button", {
             onClick: function() { setUserName(""); saveSession({}); setGameState("name_entry"); },
             className: "text-orange-400 font-semibold underline decoration-dotted underline-offset-2 hover:text-orange-300 transition-colors"
           }, userName),
-          e("span", { className: "text-gray-600" }, " \u2022 tap name to change")
+          e("span", { className: "text-gray-600" }, t.tapNameToChange),
+          e("span", { className: "text-gray-600" }, " \u2022 "),
+          e("button", {
+            onClick: toggleLang,
+            className: "text-gray-500 hover:text-orange-400 transition-colors font-medium"
+          }, lang === "en" ? "\u7E41\u4E2D" : "EN")
         ),
-        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, trumpCard: activeTrump, onNext: handleNextRound }) : null
+        gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, trumpCard: activeTrump, onNext: handleNextRound, t: t, lang: lang }) : null
       );
     }
 
