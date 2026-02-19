@@ -769,22 +769,39 @@
 
     function NameEntry(props) {
       var ref = useState(""), name = ref[0], setName = ref[1];
-      var ldRef = useState(true), loading = ldRef[0], setLoading = ldRef[1];
+      var errRef = useState(""), error = errRef[0], setError = errRef[1];
+      var chkRef = useState(false), checking = chkRef[0], setChecking = chkRef[1];
       var rlRef = useState(false), rolling = rlRef[0], setRolling = rlRef[1];
 
       function genName() {
         setRolling(true);
+        setError("");
         generateUniqueName().then(function(n) {
           setName(n);
-          setLoading(false);
           setRolling(false);
         });
       }
 
-      useEffect(function() { genName(); }, []);
+      function handleChange(ev) {
+        var val = ev.target.value.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 20);
+        setName(val);
+        setError("");
+      }
 
-      function handleAccept() {
-        if (name && !loading && !rolling) props.onSubmit(name);
+      function handleSubmit() {
+        var trimmed = name.trim();
+        if (trimmed.length < 3) { setError("Name must be at least 3 characters"); return; }
+        if (trimmed.length > 20) { setError("Name must be 20 characters or less"); return; }
+        setChecking(true);
+        setError("");
+        checkNameAvailable(trimmed).then(function(available) {
+          setChecking(false);
+          if (available) {
+            props.onSubmit(trimmed);
+          } else {
+            setError("Name taken, try another!");
+          }
+        });
       }
 
       return e("div", { className: "fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-center z-40 p-6" },
@@ -795,26 +812,31 @@
             e("span", { className: "text-white" }, " FACEOFF")
           ),
           e("p", { className: "text-gray-400 mb-6" }, "Predict the winner of epic animal battles!"),
-          e("div", { className: "mb-3" },
-            e("label", { className: "text-sm text-gray-400 block mb-3" }, "Your battle name:")
-          ),
-          e("div", { className: "bg-gray-800 border-2 border-orange-400/50 rounded-xl px-4 py-4 mb-3" },
-            loading ? e("div", { className: "text-gray-500 text-lg" }, "Generating...")
-              : e("div", { className: "text-orange-400 text-xl font-black " + (rolling ? "opacity-50" : "") }, name)
+          e("label", { className: "text-sm text-gray-400 block mb-2" }, "Choose your battle name:"),
+          e("input", {
+            type: "text",
+            value: name,
+            onChange: handleChange,
+            onKeyDown: function(ev) { if (ev.key === "Enter" && name.trim().length >= 3) handleSubmit(); },
+            placeholder: "Type a name...",
+            maxLength: 20,
+            className: "w-full bg-gray-800 border-2 border-gray-600 focus:border-orange-400 rounded-xl px-4 py-4 text-center text-orange-400 text-xl font-black placeholder-gray-600 outline-none transition-colors"
+          }),
+          e("div", { className: "flex items-center justify-between mt-2 mb-4 px-1" },
+            error ? e("span", { className: "text-red-400 text-xs font-medium" }, error)
+              : e("span", { className: "text-gray-600 text-xs" }, name.length + "/20"),
+            e("button", {
+              onClick: genName, disabled: rolling,
+              className: "text-gray-400 hover:text-orange-400 transition-colors text-sm inline-flex items-center gap-1 disabled:opacity-30"
+            },
+              e("span", { className: "text-base" + (rolling ? " animate-spin" : "") }, "\uD83C\uDFB2"),
+              " Random"
+            )
           ),
           e("button", {
-            onClick: genName, disabled: rolling,
-            className: "text-gray-400 hover:text-orange-400 transition-colors text-sm mb-6 inline-flex items-center gap-1 disabled:opacity-30"
-          },
-            e("span", { className: "text-lg" + (rolling ? " animate-spin" : "") }, "\uD83D\uDD04"),
-            " Roll again"
-          ),
-          e("div", null,
-            e("button", {
-              onClick: handleAccept, disabled: loading || rolling,
-              className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all shadow-lg shadow-orange-500/20"
-            }, "LET'S GO! \uD83D\uDD25")
-          )
+            onClick: handleSubmit, disabled: checking || rolling || name.trim().length < 3,
+            className: "w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl text-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all shadow-lg shadow-orange-500/20"
+          }, checking ? "CHECKING..." : "LET'S GO! \uD83D\uDD25")
         )
       );
     }
