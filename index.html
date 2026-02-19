@@ -101,12 +101,14 @@
       -webkit-user-select: none;
       user-select: none;
     }
-    .line-clamp-3 {
+    .line-clamp-4 {
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    .fact-box { height: 4.2rem; }
+    @media (min-width: 640px) { .fact-box { height: 3rem; } }
     .animal-card:active { transform: scale(0.96); }
   </style>
 </head>
@@ -725,8 +727,8 @@
         isWinner && result ? e("div", { className: "absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10" }, "WINNER!") : null,
         e("div", { className: "mb-2" }, e(AnimalAvatar, { animal: animal, size: "large" })),
         e("div", { className: "text-base sm:text-lg font-bold text-center leading-tight truncate w-full" }, animal.name),
-        e("div", { className: "mt-1 px-1 overflow-hidden text-center", style: { minHeight: "3.2rem" } },
-          factRef ? e("div", { className: "text-xs text-gray-400 leading-snug italic line-clamp-3" }, "\"\u2009" + factRef + "\u2009\"") : null
+        e("div", { className: "mt-1 px-1 overflow-hidden text-center fact-box" },
+          factRef ? e("div", { className: "text-xs text-gray-400 leading-snug italic line-clamp-4" }, "\"\u2009" + factRef + "\u2009\"") : null
         ),
         !result && !disabled ? e("div", { className: "mt-1 text-xs text-orange-400/80 font-medium" }, "TAP TO SELECT") : null
       );
