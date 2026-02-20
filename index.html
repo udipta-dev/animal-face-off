@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Animal Faceoff — Who Would Win?</title>
+  <title>Ultimate Faceoff — Who Would Win?</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦁</text></svg>" />
   <!-- Open Graph / Social sharing -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://udipta-dev.github.io/animal-face-off/" />
-  <meta property="og:title" content="Animal Faceoff — Who Would Win?" />
-  <meta property="og:description" content="Predict the winner of epic animal battles! 40 animals, 2 weight classes, trump cards. Play the tournament and climb the global leaderboard." />
+  <meta property="og:title" content="Ultimate Faceoff — Who Would Win?" />
+  <meta property="og:description" content="Predict the winner of epic battles! Animals, dinosaurs, bugs, and more. Trump cards, tournaments, and a global leaderboard." />
   <meta property="og:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Animal Faceoff — Who Would Win?" />
-  <meta name="twitter:description" content="Predict the winner of epic animal battles! 40 animals, 2 weight classes, trump cards!" />
+  <meta name="twitter:title" content="Ultimate Faceoff — Who Would Win?" />
+  <meta name="twitter:description" content="Predict the winner of epic battles! Animals, dinosaurs, bugs, and more. Trump cards & tournaments!" />
   <meta name="twitter:image" content="https://udipta-dev.github.io/animal-face-off/images/og-banner.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -132,8 +132,8 @@
     var T = {
       en: {
         // Name entry
-        title1: "ANIMAL", title2: " FACEOFF",
-        subtitle: "Predict the winner of epic animal battles!",
+        title1: "ULTIMATE", title2: " FACEOFF",
+        subtitle: "Predict the winner of epic battles!",
         nameLabel: "Choose your battle name:",
         namePlaceholder: "Type a name...",
         random: "Random",
@@ -190,7 +190,7 @@
         share: "SHARE \uD83D\uDCE4", copied: "COPIED! \u2705",
         playAgain: "PLAY AGAIN \uD83D\uDD01",
         shareText: function(div, score, pct, time, combined) {
-          return "\uD83E\uDD81\u2694\uFE0F Animal Faceoff \u2014 " + div + " Division\n\uD83C\uDFAF " + score + " pts (" + pct + "% accuracy" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 Leaderboard: " + combined + "\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+          return "\u2694\uFE0F Ultimate Faceoff \u2014 " + div + " Division\n\uD83C\uDFAF " + score + " pts (" + pct + "% accuracy" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 Leaderboard: " + combined + "\n\nCan you beat me? \uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
         },
         // Footer
         playingAs: "Playing as ",
@@ -213,8 +213,8 @@
         }
       },
       "zh-TW": {
-        title1: "\u52D5\u7269", title2: "\u5C0D\u6C7A",
-        subtitle: "\u9810\u6E2C\u53F2\u8A70\u52D5\u7269\u5927\u6230\u7684\u52DD\u8005\uFF01",
+        title1: "\u7D42\u6975", title2: "\u5C0D\u6C7A",
+        subtitle: "\u9810\u6E2C\u53F2\u8A70\u5C0D\u6C7A\u7684\u52DD\u8005\uFF01",
         nameLabel: "\u9078\u64C7\u4F60\u7684\u6230\u9B25\u540D\u5B57\uFF1A",
         namePlaceholder: "\u8F38\u5165\u540D\u5B57...",
         random: "\u96A8\u6A5F",
@@ -263,7 +263,7 @@
         share: "\u5206\u4EAB \uD83D\uDCE4", copied: "\u5DF2\u8907\u88FD\uFF01\u2705",
         playAgain: "\u518D\u73A9\u4E00\u6B21 \uD83D\uDD01",
         shareText: function(div, score, pct, time, combined) {
-          return "\uD83E\uDD81\u2694\uFE0F \u52D5\u7269\u5C0D\u6C7A \u2014 " + div + "\u7D44\n\uD83C\uDFAF " + score + " \u5206 (" + pct + "% \u6E96\u78BA\u7387" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 \u6392\u884C\u699C: " + combined + "\n\n\u4F60\u80FD\u6253\u6557\u6211\u55CE\uFF1F\uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
+          return "\u2694\uFE0F \u7D42\u6975\u5C0D\u6C7A \u2014 " + div + "\u7D44\n\uD83C\uDFAF " + score + " \u5206 (" + pct + "% \u6E96\u78BA\u7387" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 \u6392\u884C\u699C: " + combined + "\n\n\u4F60\u80FD\u6253\u6557\u6211\u55CE\uFF1F\uD83D\uDC47\nhttps://udipta-dev.github.io/animal-face-off/";
         },
         playingAs: "\u73A9\u5BB6\uFF1A",
         tapNameToChange: " \u2022 \u9EDE\u540D\u5B57\u66F4\u63DB",
@@ -701,7 +701,7 @@
 
     // ==================== ANIMAL DATABASE ====================
     var WEIGHT_CLASSES = {
-      heavyweight: { label: "Heavyweight", emoji: "\uD83C\uDFCB\uFE0F", desc: "The biggest, baddest animals on the planet" },
+      heavyweight: { label: "Heavyweight", emoji: "\uD83E\uDD81", desc: "The biggest, baddest animals on the planet" },
       middleweight: { label: "Middleweight", emoji: "\uD83D\uDC3A", desc: "Fast, fierce, and deadly mid-size predators" },
       dinosaurs: { label: "Dinosaurs", emoji: "\uD83E\uDD96", desc: "Prehistoric giants and ferocious killers" },
       creepy_crawlies: { label: "Creepy Crawlies", emoji: "\uD83E\uDD82", desc: "Tiny but deadly bugs, spiders, and stingers" }
@@ -1611,7 +1611,7 @@
       function handleShare() {
         var shareText = t.shareText(divLabel, props.score, pct, timeStr, combinedScore);
         if (navigator.share) {
-          navigator.share({ title: lang === "en" ? "Animal Faceoff" : "\u52D5\u7269\u5C0D\u6C7A", text: shareText }).catch(function() {});
+          navigator.share({ title: lang === "en" ? "Ultimate Faceoff" : "\u7D42\u6975\u5C0D\u6C7A", text: shareText }).catch(function() {});
         } else {
           navigator.clipboard.writeText(shareText).then(function() {
             setCopied(true);
@@ -1679,7 +1679,7 @@
     }
 
     // ==================== MAIN GAME ====================
-    function AnimalFaceoffGame() {
+    function UltimateFaceoffGame() {
       var gsRef = useState("loading"), gameState = gsRef[0], setGameState = gsRef[1];
       var muRef = useState(null), currentMatchup = muRef[0], setCurrentMatchup = muRef[1];
       var saRef = useState(null), selectedAnimal = saRef[0], setSelectedAnimal = saRef[1];
@@ -2008,7 +2008,7 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(e(AnimalFaceoffGame));
+    ReactDOM.createRoot(document.getElementById("root")).render(e(UltimateFaceoffGame));
   </script>
 </body>
 </html>
