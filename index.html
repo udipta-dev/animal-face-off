@@ -246,6 +246,10 @@
           return "\u2694\uFE0F Ultimate Faceoff \u2014 " + div + " Division\n\uD83C\uDFAF " + score + " pts (" + pct + "% accuracy" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 Leaderboard: " + combined + "\n\nCan you beat me? \uD83D\uDC47\nhttps://ultimatefaceoff.fun/";
         },
         // Footer
+        shareGame: "\uD83D\uDD17",
+        shareGameText: "\u2694\uFE0F Ultimate Faceoff \u2014 Who Would Win?\n\n100 creatures across 5 divisions: Monsters, Animals, Dinosaurs & more!\nPredict winners, collect trump cards, climb the leaderboard.\n\nPlay free \uD83D\uDC47\nhttps://ultimatefaceoff.fun/",
+        shareGameTitle: "Ultimate Faceoff",
+        linkCopied: "Link copied! \u2705",
         playingAs: "Playing as ",
         tapNameToChange: " \u2022 tap name to change",
         // Info panel
@@ -319,6 +323,10 @@
         shareText: function(div, score, pct, time, combined) {
           return "\u2694\uFE0F \u7D42\u6975\u5C0D\u6C7A \u2014 " + div + "\u7D44\n\uD83C\uDFAF " + score + " \u5206 (" + pct + "% \u6E96\u78BA\u7387" + (time ? ", " + time : "") + ")\n\uD83C\uDFC6 \u6392\u884C\u699C: " + combined + "\n\n\u4F60\u80FD\u6253\u6557\u6211\u55CE\uFF1F\uD83D\uDC47\nhttps://ultimatefaceoff.fun/";
         },
+        shareGame: "\uD83D\uDD17",
+        shareGameText: "\u2694\uFE0F \u7D42\u6975\u5C0D\u6C7A \u2014 \u8AB0\u6703\u8D0F\uFF1F\n\n100\u96BB\u751F\u7269\u6A6B\u8DE8\u4E94\u5927\u7D44\u5225\uFF1A\u795E\u9B54\u50B3\u8AAA\u3001\u52D5\u7269\u3001\u6050\u9F8D\u7B49\u66F4\u591A\uFF01\n\u9810\u6E2C\u52DD\u8005\u3001\u6536\u96C6\u738B\u724C\u3001\u6311\u6230\u6392\u884C\u699C\u3002\n\n\u514D\u8CBB\u904A\u73A9 \uD83D\uDC47\nhttps://ultimatefaceoff.fun/",
+        shareGameTitle: "\u7D42\u6975\u5C0D\u6C7A",
+        linkCopied: "\u5DF2\u8907\u88FD\u9023\u7D50\uFF01\u2705",
         playingAs: "\u73A9\u5BB6\uFF1A",
         tapNameToChange: " \u2022 \u9EDE\u540D\u5B57\u66F4\u63DB",
         howScoring: "\u8A08\u5206\u65B9\u5F0F\uFF1F",
@@ -1643,7 +1651,11 @@
             e("button", {
               onClick: props.onToggleSound,
               className: "text-gray-500 hover:text-orange-400 transition-colors text-sm font-medium"
-            }, props.soundOn ? "\uD83D\uDD0A Sound" : "\uD83D\uDD07 Muted")
+            }, props.soundOn ? "\uD83D\uDD0A Sound" : "\uD83D\uDD07 Muted"),
+            e("button", {
+              onClick: props.onShareGame,
+              className: "text-gray-500 hover:text-orange-400 transition-colors text-sm font-medium"
+            }, "\uD83D\uDD17 Share")
           )
         )
       );
@@ -1695,7 +1707,11 @@
               e("button", {
                 onClick: props.onToggleSound,
                 className: "text-gray-500 hover:text-orange-400 transition-colors text-sm font-medium"
-              }, props.soundOn ? "\uD83D\uDD0A Sound" : "\uD83D\uDD07 Muted")
+              }, props.soundOn ? "\uD83D\uDD0A Sound" : "\uD83D\uDD07 Muted"),
+              e("button", {
+                onClick: props.onShareGame,
+                className: "text-gray-500 hover:text-orange-400 transition-colors text-sm font-medium"
+              }, "\uD83D\uDD17 Share")
             )
           )
         )
@@ -1880,6 +1896,18 @@
         _soundEnabled = next;
         saveSoundPref(next);
         if (next) playSound("tap");
+      }
+      var sgRef = useState(false), shareCopied = sgRef[0], setShareCopied = sgRef[1];
+      function shareGame() {
+        playSound("tap");
+        if (navigator.share) {
+          navigator.share({ title: t.shareGameTitle, text: t.shareGameText }).catch(function() {});
+        } else {
+          navigator.clipboard.writeText(t.shareGameText).then(function() {
+            setShareCopied(true);
+            setTimeout(function() { setShareCopied(false); }, 2000);
+          }).catch(function() {});
+        }
       }
 
       // Initialize
@@ -2068,11 +2096,11 @@
       }
 
       // Name entry
-      if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit, t: t, lang: lang, onToggleLang: toggleLang, soundOn: soundOn, onToggleSound: toggleSound });
+      if (gameState === "name_entry") return e(NameEntry, { onSubmit: handleNameSubmit, t: t, lang: lang, onToggleLang: toggleLang, soundOn: soundOn, onToggleSound: toggleSound, onShareGame: shareGame });
 
       // Class select
       if (gameState === "class_select") {
-        return e(ClassSelect, { onSelect: handleClassSelect, onLeaderboard: handleShowLeaderboard, t: t, lang: lang, onToggleLang: toggleLang, onToggleSound: toggleSound, soundOn: soundOn });
+        return e(ClassSelect, { onSelect: handleClassSelect, onLeaderboard: handleShowLeaderboard, t: t, lang: lang, onToggleLang: toggleLang, onToggleSound: toggleSound, soundOn: soundOn, onShareGame: shareGame });
       }
 
       // Tournament ready
@@ -2161,7 +2189,12 @@
           e("button", {
             onClick: toggleSound,
             className: "text-gray-500 hover:text-orange-400 transition-colors font-medium"
-          }, soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07")
+          }, soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07"),
+          e("span", { className: "text-gray-600" }, " \u2022 "),
+          e("button", {
+            onClick: shareGame,
+            className: "text-gray-500 hover:text-orange-400 transition-colors font-medium"
+          }, shareCopied ? "\u2705" : t.shareGame)
         ),
         gameState === "result" ? e(ResultModal, { matchup: currentMatchup, winner: winner, selectedAnimal: selectedAnimal, points: lastPoints, isCorrect: isCorrect, streak: streak, round: round, fightScores: fightScores, trumpCard: activeTrump, onNext: handleNextRound, t: t, lang: lang }) : null
       );
