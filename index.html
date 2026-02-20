@@ -1174,7 +1174,7 @@
       return e("img", {
         src: "images/" + animal.imageBase + "." + extensions[extIndex],
         alt: animal.name,
-        className: sizeClass + " object-cover rounded-full border-2 border-white/20",
+        className: sizeClass + " object-cover rounded-2xl border-2 border-white/20",
         onError: function() {
           if (extIndex < extensions.length - 1) setExtIndex(function(i) { return i + 1; });
           else setAllFailed(true);
