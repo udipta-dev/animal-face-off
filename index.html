@@ -208,7 +208,8 @@
         wcLabels: {
           heavyweight: { label: "Heavyweight", desc: "The biggest, baddest animals on the planet" },
           middleweight: { label: "Middleweight", desc: "Fast, fierce, and deadly mid-size predators" },
-          dinosaurs: { label: "Dinosaurs", desc: "Prehistoric giants and ferocious killers" }
+          dinosaurs: { label: "Dinosaurs", desc: "Prehistoric giants and ferocious killers" },
+          creepy_crawlies: { label: "Creepy Crawlies", desc: "Tiny but deadly bugs, spiders, and stingers" }
         }
       },
       "zh-TW": {
@@ -277,7 +278,8 @@
         wcLabels: {
           heavyweight: { label: "\u91CD\u91CF\u7D1A", desc: "\u5730\u7403\u4E0A\u6700\u5927\u3001\u6700\u5F37\u7684\u52D5\u7269" },
           middleweight: { label: "\u4E2D\u91CF\u7D1A", desc: "\u5FEB\u901F\u3001\u5169\u731B\u7684\u4E2D\u578B\u6380\u98DF\u8005" },
-          dinosaurs: { label: "\u6050\u9F8D", desc: "\u53F2\u524D\u5DE8\u7378\u8207\u5169\u731B\u6BBA\u624B" }
+          dinosaurs: { label: "\u6050\u9F8D", desc: "\u53F2\u524D\u5DE8\u7378\u8207\u5169\u731B\u6BBA\u624B" },
+          creepy_crawlies: { label: "\u6050\u6016\u722C\u87F2", desc: "\u5FAE\u5C0F\u4F46\u81F4\u547D\u7684\u6606\u87F2\u3001\u86DB\u86DB\u548C\u880D\u5B50" }
         }
       }
     };
@@ -346,7 +348,28 @@
       "therizinosaurus_001": { name: "\u93AE\u5200\u9F8D", trump: "\u5DE8\u93AE\u722A", trumpDesc: "90\u516C\u5206\u5229\u722A", facts: ["\u64C1\u6709\u670990\u516C\u5206\u7684\u722A\u5B50\u2014\u2014\u53F2\u4E0A\u6700\u9577", "\u5118\u7BA1\u722A\u5B50\u53EF\u6015\u4F46\u5176\u5BE6\u662F\u8349\u98DF\u52D5\u7269", "\u770B\u8D77\u4F86\u50CF\u4E00\u96BB\u5DE8\u5927\u7684\u6709\u7FBD\u6BDB\u6A39\u61F6"] },
       "pteranodon_001": { name: "\u7121\u9F52\u7FFC\u9F8D", trump: "\u4FEF\u885D\u8F5F\u70B8", trumpDesc: "\u5F9E\u7A7A\u4E2D\u653B\u64CA", facts: ["\u7FFC\u5C557\u7C73\u4F46\u9AD4\u91CD\u50C525\u516C\u65A4", "\u4E0D\u662F\u6050\u9F8D\u2014\u2014\u662F\u98DB\u884C\u722C\u87F2\u985E", "\u6C92\u6709\u7259\u9F52\u2014\u2014\u7528\u5582\u50CF\u9D58\u9E1C\u4E00\u6A23\u820D\u53D6\u9B5A\u985E"] },
       "quetzalcoatlus_001": { name: "\u98CE\u795E\u7FFC\u9F8D", trump: "\u5929\u7A7A\u5DE8\u4EBA", trumpDesc: "\u53F2\u4E0A\u6700\u5927\u7684\u98DB\u884C\u52D5\u7269", facts: ["\u50CF\u9577\u9838\u9E7F\u4E00\u6A23\u9AD8\uFF0C\u7FC0\u5C5511\u7C73", "\u80FD\u4EE5\u6642\u901F128\u516C\u91CC\u98DB\u884C\u6578\u5343\u516C\u91CC", "\u4EE5\u963F\u8332\u7279\u514B\u7FBD\u86C7\u795E\u547D\u540D"] },
-      "megalosaurus_001": { name: "\u65A5\u9F8D", trump: "\u7B2C\u4E00\u7375\u624B", trumpDesc: "\u7B2C\u4E00\u96BB\u88AB\u767C\u73FE\u7684\u6050\u9F8D", facts: ["\u7B2C\u4E00\u96BB\u88AB\u79D1\u5B78\u547D\u540D\u7684\u6050\u9F8D\uFF0C1824\u5E74", "\u6700\u521D\u88AB\u8A8D\u70BA\u662F\u5DE8\u578B\u8725\u87F4\uFF0C\u4E0D\u662F\u6050\u9F8D", "\u5728\u4E00\u5104\u516D\u5343\u516D\u767E\u842C\u5E74\u524D\u6F2B\u904A\u82F1\u683C\u862D"] }
+      "megalosaurus_001": { name: "\u65A5\u9F8D", trump: "\u7B2C\u4E00\u7375\u624B", trumpDesc: "\u7B2C\u4E00\u96BB\u88AB\u767C\u73FE\u7684\u6050\u9F8D", facts: ["\u7B2C\u4E00\u96BB\u88AB\u79D1\u5B78\u547D\u540D\u7684\u6050\u9F8D\uFF0C1824\u5E74", "\u6700\u521D\u88AB\u8A8D\u70BA\u662F\u5DE8\u578B\u8725\u87F4\uFF0C\u4E0D\u662F\u6050\u9F8D", "\u5728\u4E00\u5104\u516D\u5343\u516D\u767E\u842C\u5E74\u524D\u6F2B\u904A\u82F1\u683C\u862D"] },
+      // --- CREEPY CRAWLIES ---
+      "bullet_ant_001": { name: "\u5B50\u5F48\u87FB", trump: "\u75DB\u82E6\u87C4\u523A", trumpDesc: "\u5730\u7403\u4E0A\u6700\u75DB\u7684\u87C4\u523A", facts: ["\u87C4\u523A\u88AB\u8A55\u70BA\u53F2\u5BC6\u7279\u75BC\u75DB\u6307\u6578\u7B2C\u4E00\u540D\u2014\u2014\u50CF\u88AB\u69CD\u64CA\u4E2D", "\u5DF4\u897F\u85A9\u7279\u96F7-\u99AC\u97CB\u65CF\u7528\u5B83\u4F86\u9032\u884C\u6210\u5E74\u79AE", "\u53EF\u9577\u904E2.5\u516C\u5206\u2014\u2014\u6700\u5927\u7684\u87DE\u87FB\u4E4B\u4E00"] },
+      "japanese_giant_hornet_001": { name: "\u65E5\u672C\u5927\u864E\u982D\u8702", trump: "\u8B00\u6BBA\u7FA4\u653B", trumpDesc: "\u53EC\u559A\u6574\u500B\u8702\u7FA4", facts: ["30\u96BB\u864E\u982D\u8702\u53EF\u57283\u5C0F\u6642\u5167\u6D88\u6EC53\u842C\u96BB\u871C\u8702", "\u6BD2\u6DB2\u80FD\u6EB6\u89E3\u4EBA\u9AD4\u7D44\u7E54\u4E26\u5C0E\u81F4\u5668\u5B98\u8870\u7AED", "\u6642\u901F40\u516C\u91CC\uFF0C\u4E00\u5929\u53EF\u4EE5\u98DB\u884C100\u516C\u91CC"] },
+      "tarantula_hawk_wasp_001": { name: "\u6C99\u6F20\u8718\u8702", trump: "\u7375\u86DB\u8005", trumpDesc: "\u5C07\u72FC\u86DB\u6D3B\u6D3B\u75F2\u75FA", facts: ["\u7528\u87C4\u523A\u5C07\u72FC\u86DB\u75F2\u75FA\u5F8C\u7375\u6BBA", "\u87C4\u523A\u88AB\u8A55\u70BA\u53F2\u5BC6\u7279\u75BC\u75DB\u6307\u6578\u7B2C\u4E8C\u540D\u2014\u2014\u6703\u8B93\u4EBA\u77AC\u9593\u5C16\u53EB", "\u5728\u75F2\u75FA\u7684\u86DB\u4E0A\u7522\u4E00\u9846\u5375\u2014\u2014\u5E7C\u87F2\u5C07\u5B83\u6D3B\u6D3B\u5403\u6389"] },
+      "praying_mantis_001": { name: "\u87B3\u8782", trump: "\u4F0F\u64CA\u653B\u64CA", trumpDesc: "50\u6BEB\u79D2\u5167\u653B\u64CA", facts: ["\u653B\u64CA\u901F\u5EA6\u4E0D\u5230\u4E94\u5341\u6BEB\u79D2\u2014\u2014\u5FEB\u5230\u770B\u4E0D\u898B", "\u96CC\u6027\u6709\u6642\u6703\u5728\u4EA4\u914D\u6642\u5403\u6389\u96C4\u6027\u7684\u982D", "\u552F\u4E00\u80FD\u5C07\u982D\u8F49180\u5EA6\u5411\u5F8C\u770B\u7684\u6606\u87F2"] },
+      "emperor_scorpion_001": { name: "\u5E1D\u738B\u880D", trump: "\u7C89\u788E\u9257\u722A", trumpDesc: "\u7528\u86EE\u529B\u7C89\u788E\u7375\u7269", facts: ["\u6700\u5927\u7684\u880D\u5B50\u4E4B\u4E00\u2014\u2014\u53EF\u905E20\u516C\u5206\u9577", "\u6BD2\u6DB2\u5176\u5BE6\u5F88\u6EAB\u548C\u2014\u2014\u4E3B\u8981\u9760\u722A\u5B50\u7684\u7C89\u788E\u529B", "\u5728\u7D2B\u5916\u7DDA\u4E0B\u6703\u767C\u51FA\u660E\u4EAE\u7684\u85CD\u7DA0\u8272\u5149"] },
+      "deathstalker_scorpion_001": { name: "\u6B7B\u795E\u880D", trump: "\u81F4\u547D\u6BD2\u6DB2", trumpDesc: "\u6700\u5371\u96AA\u7684\u880D\u5B50\u6BD2\u6DB2", facts: ["\u5730\u7403\u4E0A\u6BD2\u6027\u6700\u5F37\u7684\u880D\u5B50\u2014\u2014\u53EF\u4EE5\u6BBA\u6B7B\u4EBA\u985E", "\u53EA\u67098\u523010\u516C\u5206\u9577\u4F46\u9020\u621075%\u7684\u880D\u5B50\u6B7B\u4EA1\u6848\u4F8B", "\u6BD2\u6DB2\u4E2D\u7684\u6210\u5206\u6B63\u88AB\u7528\u65BC\u7814\u7A76\u6CBB\u7642\u8166\u764C"] },
+      "goliath_beetle_001": { name: "\u6B4C\u5229\u4E9E\u7532\u87F2", trump: "\u6CF0\u5766\u529B\u91CF", trumpDesc: "\u6700\u5F37\u58EF\u7684\u6606\u87F2", facts: ["\u80FD\u627F\u8F09\u81EA\u8EAB\u9AD4\u91CD850\u500D\u7684\u91CD\u91CF", "\u9AD4\u91CD\u53EF\u905E100\u514B\u2014\u2014\u50CF\u4E00\u500B\u5C0F\u860B\u679C\u4E00\u6A23\u91CD", "\u5E7C\u87F2\u53EF\u9577\u523013\u516C\u5206\uFF0C\u6BD4\u6210\u87F2\u9084\u91CD"] },
+      "hercules_beetle_001": { name: "\u6D77\u514B\u529B\u58EB\u7532\u87F2", trump: "\u89D2\u7FFB\u6446", trumpDesc: "\u7528\u5DE8\u89D2\u7FFB\u8F49\u5C0D\u624B", facts: ["\u4E16\u754C\u4E0A\u6700\u9577\u7684\u7532\u87F2\u2014\u2014\u9023\u89D2\u53EF\u905E18\u516C\u5206", "\u80FD\u7528\u89D2\u8209\u8D77\u81EA\u8EAB\u9AD4\u91CD850\u500D\u7684\u7269\u9AD4", "\u96C4\u6027\u7528\u89D2\u593E\u4F4F\u5C0D\u624B\u7136\u5F8C\u91CD\u6454\u5728\u5730"] },
+      "titan_beetle_001": { name: "\u6CF0\u5766\u5927\u5929\u725B", trump: "\u5927\u9852\u7DCA\u54AC", trumpDesc: "\u4E0B\u9852\u53EF\u4EE5\u54AC\u65B7\u925B\u7B46", facts: ["\u5730\u7403\u4E0A\u6700\u5927\u7684\u7532\u87F2\u2014\u2014\u50C5\u8EAB\u9AD4\u5C31\u905E17\u516C\u5206", "\u4E0B\u9852\u53EF\u4EE5\u5C07\u6728\u88FD\u925B\u7B46\u54AC\u65B7", "\u6210\u87F2\u5F9E\u4E0D\u9032\u98DF\u2014\u2014\u53EA\u70BA\u5C0B\u627E\u914D\u5076\u800C\u6D3B\uFF0C\u7136\u5F8C\u6B7B\u53BB"] },
+      "giant_centipede_001": { name: "\u5DE8\u4EBA\u8590\u8693", trump: "\u6BD2\u6DB2\u9583\u64CA", trumpDesc: "\u6BD2\u8DB3\u5F9E\u5404\u89D2\u5EA6\u653B\u64CA", facts: ["\u80FD\u5728\u6D1E\u7A74\u5929\u82B1\u677F\u5012\u639B\u6642\u6355\u6349\u7A7A\u4E2D\u7684\u87A0\u87C0", "\u66FE\u5728\u93E1\u982D\u524D\u5DEE\u9EDE\u6BBA\u6B7B\u91CE\u751F\u52D5\u7269\u5C08\u5BB6\u90ED\u4F0A\u7279\u00B7\u5F7C\u5F97\u68EE", "\u6BD2\u7259\u5176\u5BE6\u662F\u524D\u8173\u8B8A\u5F62\u7684\u2014\u2014\u4E0D\u662F\u5634\u5DF4"] },
+      "black_widow_001": { name: "\u9ED1\u5BE1\u5A66\u86DB", trump: "\u795E\u7D93\u6BD2\u7D20", trumpDesc: "\u6BD2\u6DB2\u6BD4\u97FF\u5C3E\u86C7\u5F3715\u500D", facts: ["\u6BD2\u6DB2\u6BD4\u97FF\u5C3E\u86C7\u5F3715\u500D", "\u96CC\u6027\u6709\u6642\u6703\u5728\u4EA4\u914D\u5F8C\u5403\u6389\u96C4\u6027\u2014\u2014\u56E0\u6B64\u5F97\u540D", "\u7DB2\u7D72\u6BD4\u540C\u7B49\u7C97\u7D30\u7684\u92FC\u7D72\u9084\u5F37\u97CC"] },
+      "sydney_funnel_web_001": { name: "\u96EA\u68A8\u6F0F\u6597\u7DB2\u86DB", trump: "\u6BD2\u7259\u653B\u64CA", trumpDesc: "\u6BD2\u7259\u53EF\u4EE5\u523A\u7A7F\u8173\u6307\u7532", facts: ["\u4E16\u754C\u4E0A\u6700\u5371\u96AA\u7684\u86DB\u2014\u201415\u5206\u9418\u5167\u53EF\u6BBA\u6B7B\u4EBA\u985E", "\u6BD2\u7259\u5F37\u5927\u5230\u53EF\u4EE5\u54AC\u7A7F\u8173\u6307\u7532", "\u96C4\u6027\u7684\u6BD2\u6027\u662F\u96CC\u6027\u76846\u500D"] },
+      "driver_ant_001": { name: "\u884C\u8ECD\u87FB", trump: "\u5927\u8ECD\u7FA4\u653B", trumpDesc: "2000\u842C\u96BB\u87DE\u87FB\u4E00\u8D77\u884C\u9032", facts: ["2000\u842C\u96BB\u7684\u7FA4\u9AD4\u6383\u904E\u5730\u9762\u5403\u6389\u4E00\u5207", "\u53EF\u4EE5\u5728\u6578\u5C0F\u6642\u5167\u5C07\u5927\u578B\u52D5\u7269\u5265\u70BA\u767D\u9AA8", "\u88AB\u7528\u4F5C\u5929\u7136\u50B7\u53E3\u7E2B\u5408\u2014\u2014\u7259\u9F52\u53EF\u4EE5\u593E\u4F4F\u76AE\u819A"] },
+      "giant_water_bug_001": { name: "\u5DE8\u578B\u6C34\u87F2", trump: "\u8173\u8DA3\u54AC", trumpDesc: "\u5F9E\u6C34\u4E0B\u4F0F\u64CA\u7DCA\u6291", facts: ["\u88AB\u7A31\u70BA\u300C\u54AC\u8173\u8DA3\u300D\u56E0\u70BA\u6703\u54AC\u6E38\u6CF3\u8005\u7684\u8173", "\u6CE8\u5165\u6D88\u5316\u6DB2\u5F9E\u5167\u90E8\u6EB6\u89E3\u7375\u7269", "\u80FD\u6355\u6349\u548C\u5403\u6389\u5C0F\u9B5A\u3001\u9752\u86D9\u751A\u81F3\u5C0F\u70CF\u9F9C"] },
+      "bombardier_beetle_001": { name: "\u6531\u5F48\u6B65\u884C\u87F2", trump: "\u5316\u5B78\u7206\u70B8", trumpDesc: "\u5674\u5C04\u6CB8\u9A30\u7684\u9178\u6DB2", facts: ["\u5F9E\u8179\u90E8\u5674\u5C04\u651D\u6C0F100\u5EA6\u7684\u5316\u5B78\u6DB2\u9AD4", "\u53EF\u4EE5\u7CBE\u78BA\u5730\u5F80\u4EFB\u4F55\u65B9\u5411\u5674\u5C04", "\u5316\u5B78\u53CD\u61C9\u767C\u751F\u5728\u9AD4\u5167\u2014\u2014\u50CF\u4E00\u500B\u5C0F\u578B\u70B8\u5F48"] },
+      "fire_ant_001": { name: "\u706B\u87FB", trump: "\u706B\u7130\u7FA4\u653B", trumpDesc: "\u6578\u5343\u96BB\u540C\u6642\u87C4\u523A", facts: ["\u5354\u8ABF\u653B\u64CA\u2014\u2014\u6240\u6709\u87DE\u87FB\u5728\u540C\u4E00\u523B\u87C4\u523A", "\u80FD\u7528\u81EA\u5DF1\u7684\u8EAB\u9AD4\u5EFA\u9020\u6D3B\u4F53\u7B4F\u7B4F\u4F86\u5EA6\u904E\u6D2A\u6C34", "\u6BCF\u5E74\u5728\u7F8E\u570B\u9020\u6210\u8D85\u904E60\u5104\u7F8E\u5143\u7684\u640D\u5931"] },
+      "jewel_wasp_001": { name: "\u5BF6\u77F3\u8702", trump: "\u50F5\u5C4D\u87C4\u523A", trumpDesc: "\u5C07\u87D1\u87B2\u8B8A\u6210\u50F5\u5C4D", facts: ["\u87C4\u523A\u87D1\u87B2\u7684\u5927\u8166\u5C07\u5176\u8B8A\u6210\u50F5\u5C4D\u5974\u96B8", "\u62C9\u8457\u50F5\u5C4D\u87D1\u87B2\u7684\u89F8\u89D2\u50CF\u7D81\u7E69\u4E00\u6A23\u5E36\u56DE\u5DE2\u7A74", "\u5E7C\u87F2\u5F9E\u5167\u90E8\u5403\u6389\u4ECD\u7136\u6D3B\u8457\u7684\u87D1\u87B2"] },
+      "robber_fly_001": { name: "\u76DC\u8650\u87C0", trump: "\u7A7A\u4E2D\u6BBA\u624B", trumpDesc: "\u5728\u7A7A\u4E2D\u6355\u6349\u7375\u7269", facts: ["\u5728\u9AD8\u901F\u98DB\u884C\u4E2D\u6514\u622A\u4E26\u6355\u6349\u5176\u4ED6\u6606\u87F2", "\u6CE8\u5165\u75F2\u75FA\u6BD2\u6DB2\u7136\u5F8C\u50CF\u559D\u6614\u6614\u4E00\u6A23\u5438\u98DF\u7375\u7269", "\u6709\u4E00\u5708\u523A\u6BDB\u300C\u9B0D\u5B50\u300D\u5728\u653B\u64CA\u6642\u4FDD\u8B77\u81C9\u90E8"] },
+      "trap_jaw_ant_001": { name: "\u5927\u9857\u87FB", trump: "\u9583\u96FB\u4E00\u64CA", trumpDesc: "\u81EA\u7136\u754C\u6700\u5FEB\u7684\u653B\u64CA", facts: ["\u4E0B\u9852\u4EE5\u6642\u901F233\u516C\u91CC\u95DC\u9589\u2014\u2014\u52D5\u7269\u754C\u6700\u5FEB\u7684\u653B\u64CA", "\u80FD\u5C07\u4E0B\u9852\u649E\u64CA\u5730\u9762\u5C07\u81EA\u5DF1\u5F48\u5C04\u5230\u7A7A\u4E2D", "\u653B\u64CA\u50C5\u97000.13\u6BEB\u79D2\u2014\u2014\u6BD4\u7728\u773C\u5FEB2300\u500D"] },
+      "dragonfly_001": { name: "\u8713\u8712", trump: "\u7A7A\u4E2D\u7375\u624B", trumpDesc: "95%\u7375\u98DF\u6210\u529F\u7387", facts: ["95%\u7375\u98DF\u6210\u529F\u7387\u2014\u2014\u5730\u7403\u4E0A\u6700\u9AD8\u6548\u7684\u6380\u98DF\u8005", "\u5DF2\u5B58\u5728\u4E09\u5104\u5E74\u2014\u2014\u6BD4\u6050\u9F8D\u9084\u65E9", "\u6BCF\u96BB\u773C\u6709\u4E09\u842C\u500B\u93E1\u982D\uFF0C\u63D0\u4F9B\u8FD1360\u5EA6\u8996\u91CE"] }
     };
 
     // Helper: get translated animal field
@@ -581,7 +604,8 @@
     var DIV_COLS = {
       heavyweight: { score: "best_hw_score", streak: "best_hw_streak", correct: "best_hw_correct" },
       middleweight: { score: "best_mw_score", streak: "best_mw_streak", correct: "best_mw_correct" },
-      dinosaurs: { score: "best_dino_score", streak: "best_dino_streak", correct: "best_dino_correct" }
+      dinosaurs: { score: "best_dino_score", streak: "best_dino_streak", correct: "best_dino_correct" },
+      creepy_crawlies: { score: "best_cc_score", streak: "best_cc_streak", correct: "best_cc_correct" }
     };
     var ALL_DIV_SCORE_COLS = Object.keys(DIV_COLS).map(function(k) { return DIV_COLS[k].score; });
     var ALL_DIV_COLS = [];
@@ -679,7 +703,8 @@
     var WEIGHT_CLASSES = {
       heavyweight: { label: "Heavyweight", emoji: "\uD83C\uDFCB\uFE0F", desc: "The biggest, baddest animals on the planet" },
       middleweight: { label: "Middleweight", emoji: "\uD83D\uDC3A", desc: "Fast, fierce, and deadly mid-size predators" },
-      dinosaurs: { label: "Dinosaurs", emoji: "\uD83E\uDD96", desc: "Prehistoric giants and ferocious killers" }
+      dinosaurs: { label: "Dinosaurs", emoji: "\uD83E\uDD96", desc: "Prehistoric giants and ferocious killers" },
+      creepy_crawlies: { label: "Creepy Crawlies", emoji: "\uD83E\uDD82", desc: "Tiny but deadly bugs, spiders, and stingers" }
     };
 
     var allAnimals = [
@@ -928,6 +953,88 @@
         stats: { strength: 78, speed: 65, defense: 65, aggression: 80 },
         trump: { name: "First Hunter", bonus: 15, desc: "The first dinosaur ever found" },
         facts: ["First dinosaur ever scientifically named, in 1824", "Was originally thought to be a giant lizard, not a dinosaur", "Roamed England 166 million years ago"] },
+
+      // ---- CREEPY CRAWLIES ----
+      { id: "bullet_ant_001", name: "Bullet Ant", emoji: "\uD83D\uDC1C", imageBase: "bullet-ant", weightClass: "creepy_crawlies",
+        stats: { strength: 55, speed: 65, defense: 60, aggression: 95 },
+        trump: { name: "Pain Sting", bonus: 18, desc: "Most painful sting on Earth" },
+        facts: ["Sting rated #1 on the Schmidt Pain Index \u2014 feels like being shot", "Used in coming-of-age rituals by the Sater\u00E9-Maw\u00E9 tribe in Brazil", "Can grow over an inch long \u2014 one of the largest ants"] },
+      { id: "japanese_giant_hornet_001", name: "Japanese Giant Hornet", emoji: "\uD83D\uDC1D", imageBase: "japanese-giant-hornet", weightClass: "creepy_crawlies",
+        stats: { strength: 68, speed: 82, defense: 62, aggression: 92 },
+        trump: { name: "Murder Swarm", bonus: 17, desc: "Calls in the entire colony" },
+        facts: ["30 hornets can wipe out a hive of 30,000 honeybees in 3 hours", "Venom dissolves human tissue and can cause organ failure", "Flies at 25 mph and can cover 60 miles in a single day"] },
+      { id: "tarantula_hawk_wasp_001", name: "Tarantula Hawk Wasp", emoji: "\uD83D\uDC1D", imageBase: "tarantula-hawk-wasp", weightClass: "creepy_crawlies",
+        stats: { strength: 72, speed: 85, defense: 58, aggression: 88 },
+        trump: { name: "Spider Hunter", bonus: 18, desc: "Paralyzes tarantulas alive" },
+        facts: ["Hunts tarantulas by stinging them into paralysis", "Sting rated #2 on the Schmidt Pain Index \u2014 causes instant screaming", "Lays a single egg on the paralyzed spider \u2014 larva eats it alive"] },
+      { id: "praying_mantis_001", name: "Praying Mantis", emoji: "\uD83E\uDD97", imageBase: "praying-mantis", weightClass: "creepy_crawlies",
+        stats: { strength: 70, speed: 88, defense: 52, aggression: 85 },
+        trump: { name: "Ambush Strike", bonus: 16, desc: "Strikes in 50 milliseconds" },
+        facts: ["Strikes prey in under 50 milliseconds \u2014 too fast to see", "Females sometimes eat the male\u2019s head during mating", "Only insect that can turn its head 180 degrees to look behind"] },
+      { id: "emperor_scorpion_001", name: "Emperor Scorpion", emoji: "\uD83E\uDD82", imageBase: "emperor-scorpion", weightClass: "creepy_crawlies",
+        stats: { strength: 85, speed: 45, defense: 95, aggression: 85 },
+        trump: { name: "Crushing Pincers", bonus: 17, desc: "Crushes prey with brute force" },
+        facts: ["One of the largest scorpions \u2014 up to 8 inches long", "Venom is actually mild \u2014 relies on crushing power instead", "Glows bright blue-green under ultraviolet light"] },
+      { id: "deathstalker_scorpion_001", name: "Deathstalker Scorpion", emoji: "\uD83E\uDD82", imageBase: "deathstalker-scorpion", weightClass: "creepy_crawlies",
+        stats: { strength: 58, speed: 82, defense: 72, aggression: 98 },
+        trump: { name: "Lethal Venom", bonus: 18, desc: "Most dangerous scorpion venom" },
+        facts: ["Most venomous scorpion on Earth \u2014 can kill a human", "Only 3\u20134 inches long but responsible for 75% of scorpion deaths", "Venom contains a compound being studied to treat brain cancer"] },
+      { id: "goliath_beetle_001", name: "Goliath Beetle", emoji: "\uD83E\uDEB2", imageBase: "goliath-beetle", weightClass: "creepy_crawlies",
+        stats: { strength: 95, speed: 30, defense: 92, aggression: 55 },
+        trump: { name: "Titan Strength", bonus: 22, desc: "Strongest insect alive" },
+        facts: ["Can carry 850 times its own body weight", "Weighs up to 100 grams \u2014 as heavy as a small apple", "Larvae can grow to 5 inches and weigh even more than adults"] },
+      { id: "hercules_beetle_001", name: "Hercules Beetle", emoji: "\uD83E\uDEB2", imageBase: "hercules-beetle", weightClass: "creepy_crawlies",
+        stats: { strength: 92, speed: 35, defense: 88, aggression: 60 },
+        trump: { name: "Horn Flip", bonus: 20, desc: "Flips rivals with massive horn" },
+        facts: ["Longest beetle in the world \u2014 up to 7 inches including horn", "Can lift 850 times its body weight with its horn", "Males fight by clamping rivals with their horns and slamming them"] },
+      { id: "titan_beetle_001", name: "Titan Beetle", emoji: "\uD83E\uDEB2", imageBase: "titan-beetle", weightClass: "creepy_crawlies",
+        stats: { strength: 88, speed: 32, defense: 90, aggression: 62 },
+        trump: { name: "Jaw Snap", bonus: 22, desc: "Mandibles snap pencils in half" },
+        facts: ["Largest beetle on Earth \u2014 body alone reaches 6.5 inches", "Mandibles can snap a wooden pencil in half", "Adults never eat \u2014 they live only to find a mate, then die"] },
+      { id: "giant_centipede_001", name: "Giant Centipede", emoji: "\uD83D\uDC1B", imageBase: "giant-centipede", weightClass: "creepy_crawlies",
+        stats: { strength: 78, speed: 88, defense: 58, aggression: 91 },
+        trump: { name: "Venom Blitz", bonus: 17, desc: "Venomous legs strike from all angles" },
+        facts: ["Can catch and eat bats in mid-air while hanging from cave ceilings", "Nearly killed wildlife expert Coyote Peterson on camera", "Has venomous fangs modified from its front legs \u2014 not its mouth"] },
+      { id: "black_widow_001", name: "Black Widow", emoji: "\uD83D\uDD77\uFE0F", imageBase: "black-widow", weightClass: "creepy_crawlies",
+        stats: { strength: 48, speed: 78, defense: 45, aggression: 92 },
+        trump: { name: "Neurotoxin", bonus: 18, desc: "Venom 15x stronger than rattlesnake" },
+        facts: ["Venom is 15 times stronger than a rattlesnake\u2019s", "Females sometimes eat the male after mating \u2014 hence the name", "Web silk is stronger than steel of the same thickness"] },
+      { id: "sydney_funnel_web_001", name: "Sydney Funnel-Web", emoji: "\uD83D\uDD77\uFE0F", imageBase: "sydney-funnel-web", weightClass: "creepy_crawlies",
+        stats: { strength: 55, speed: 75, defense: 52, aggression: 95 },
+        trump: { name: "Fang Strike", bonus: 18, desc: "Fangs pierce through toenails" },
+        facts: ["Most dangerous spider in the world \u2014 can kill a human in 15 minutes", "Fangs are powerful enough to bite through a toenail", "Males are 6 times more deadly than females"] },
+      { id: "driver_ant_001", name: "Driver Ant", emoji: "\uD83D\uDC1C", imageBase: "driver-ant", weightClass: "creepy_crawlies",
+        stats: { strength: 42, speed: 60, defense: 50, aggression: 98 },
+        trump: { name: "Army Swarm", bonus: 20, desc: "20 million ants march together" },
+        facts: ["Colonies of 20 million swarm across the ground eating everything", "Can strip a large animal to bone in hours", "Used as natural wound stitches \u2014 their jaws clamp skin shut"] },
+      { id: "giant_water_bug_001", name: "Giant Water Bug", emoji: "\uD83E\uDEB3", imageBase: "giant-water-bug", weightClass: "creepy_crawlies",
+        stats: { strength: 78, speed: 65, defense: 68, aggression: 82 },
+        trump: { name: "Toe Biter", bonus: 15, desc: "Ambush grip from underwater" },
+        facts: ["Called \u201Ctoe biters\u201D because they bite swimmers\u2019 feet", "Injects digestive enzymes that liquefy prey from inside", "Can catch and eat small fish, frogs, and even baby turtles"] },
+      { id: "bombardier_beetle_001", name: "Bombardier Beetle", emoji: "\uD83E\uDEB2", imageBase: "bombardier-beetle", weightClass: "creepy_crawlies",
+        stats: { strength: 52, speed: 55, defense: 85, aggression: 70 },
+        trump: { name: "Chemical Blast", bonus: 20, desc: "Shoots boiling acid spray" },
+        facts: ["Shoots a boiling chemical spray at 212\u00B0F from its abdomen", "Can aim the spray in almost any direction with precision", "The chemical reaction happens inside its body \u2014 like a tiny bomb"] },
+      { id: "fire_ant_001", name: "Fire Ant", emoji: "\uD83D\uDC1C", imageBase: "fire-ant", weightClass: "creepy_crawlies",
+        stats: { strength: 40, speed: 62, defense: 48, aggression: 95 },
+        trump: { name: "Fire Swarm", bonus: 20, desc: "Thousands sting at once" },
+        facts: ["Coordinates attacks \u2014 all sting at exactly the same moment", "Can build living rafts out of their own bodies to survive floods", "Causes over $6 billion in damage in the US every year"] },
+      { id: "jewel_wasp_001", name: "Jewel Wasp", emoji: "\uD83D\uDC1D", imageBase: "jewel-wasp", weightClass: "creepy_crawlies",
+        stats: { strength: 50, speed: 88, defense: 42, aggression: 80 },
+        trump: { name: "Zombie Sting", bonus: 22, desc: "Turns cockroaches into zombies" },
+        facts: ["Stings a cockroach\u2019s brain to turn it into a zombie slave", "Leads the zombie roach to its burrow by pulling its antenna like a leash", "Larva eats the still-living cockroach from the inside out"] },
+      { id: "robber_fly_001", name: "Robber Fly", emoji: "\uD83E\uDEB0", imageBase: "robber-fly", weightClass: "creepy_crawlies",
+        stats: { strength: 55, speed: 95, defense: 38, aggression: 82 },
+        trump: { name: "Aerial Assassin", bonus: 16, desc: "Catches prey mid-flight" },
+        facts: ["Intercepts and catches other insects mid-flight at high speed", "Injects paralyzing venom and drinks prey like a smoothie", "Has a bristly \u201Cmustache\u201D that protects its face during attacks"] },
+      { id: "trap_jaw_ant_001", name: "Trap-jaw Ant", emoji: "\uD83D\uDC1C", imageBase: "trap-jaw-ant", weightClass: "creepy_crawlies",
+        stats: { strength: 65, speed: 92, defense: 55, aggression: 78 },
+        trump: { name: "Snap Strike", bonus: 18, desc: "Fastest strike in nature" },
+        facts: ["Jaws snap shut at 145 mph \u2014 fastest strike in the animal kingdom", "Can launch itself into the air by snapping its jaws against the ground", "Strike takes only 0.13 milliseconds \u2014 2,300 times faster than a blink"] },
+      { id: "dragonfly_001", name: "Dragonfly", emoji: "\uD83E\uDD97", imageBase: "dragonfly", weightClass: "creepy_crawlies",
+        stats: { strength: 55, speed: 98, defense: 42, aggression: 85 },
+        trump: { name: "Aerial Hunter", bonus: 17, desc: "95% hunt success rate" },
+        facts: ["95% hunt success rate \u2014 the most efficient predator on Earth", "Has existed for 300 million years \u2014 before dinosaurs", "Each eye has 30,000 lenses giving near 360-degree vision"] },
     ];
     allAnimals.forEach(function(a) {
       a.fightScore = a.stats.strength + a.stats.speed + a.stats.defense + a.stats.aggression;
