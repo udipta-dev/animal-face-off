@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://udipta-dev.github.io/animal-face-off/sitemap.xml
+Sitemap: https://ultimatefaceoff.fun/sitemap.xml
